@@ -104,6 +104,7 @@ const App = () => {
       }, 6000);
     }
   };
+
   const handleSubmitRestaurantDetails = async (details) => {
     try {
       const token = await getToken(); // Get the token from Clerk
@@ -130,7 +131,6 @@ const App = () => {
       console.error('Error submitting restaurant details:', error);
     }
   };
-  
 
   const renderPage = () => {
     switch (currentPage) {
