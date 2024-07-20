@@ -104,7 +104,6 @@ const App = () => {
       }, 6000);
     }
   };
-
   const handleSubmitRestaurantDetails = async (details) => {
     try {
       const token = await getToken(); // Get the token from Clerk
@@ -120,6 +119,10 @@ const App = () => {
           clerkId: user.id, // Use clerkId instead of owner
         }),
       });
+      if (!res.ok) {
+        const errorDetails = await res.text();
+        throw new Error(`Error submitting restaurant details: ${errorDetails}`);
+      }
       const data = await res.json();
       console.log('Restaurant Details:', data);
       setCurrentPage('TableOverview');
@@ -127,6 +130,7 @@ const App = () => {
       console.error('Error submitting restaurant details:', error);
     }
   };
+  
 
   const renderPage = () => {
     switch (currentPage) {
