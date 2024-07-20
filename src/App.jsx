@@ -128,6 +128,7 @@ const App = () => {
       console.error('Error submitting restaurant details:', error);
     }
   };
+  
 
   const renderPage = () => {
     switch (currentPage) {
