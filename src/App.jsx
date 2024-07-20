@@ -19,12 +19,13 @@ const App = () => {
 
   const createOrUpdateUser = async () => {
     try {
+      const token = user.tokens[0].token; // Assuming the token is stored in user.tokens
       console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
       const res = await fetch(`${backendApiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`, // Use clientId here
+          'Authorization': `Bearer ${token}`, // Use token here
         },
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
@@ -97,11 +98,12 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
+      const token = user.tokens[0].token; // Assuming the token is stored in user.tokens
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`, // Use clientId here
+          'Authorization': `Bearer ${token}`, // Use token here
         },
         body: JSON.stringify({
           ...details,
