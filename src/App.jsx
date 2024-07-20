@@ -16,31 +16,15 @@ const App = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
   const { user } = useUser();
-  const { getToken } = useAuth();
 
-  useEffect(() => {
-    const logToken = async () => {
-      if (user) {
-        try {
-          const token = await getToken();
-          console.log('User Token:', token);
-          await createOrUpdateUser(user, token);
-        } catch (error) {
-          console.error('Error fetching token:', error);
-        }
-      }
-    };
-    logToken();
-  }, [user, getToken]);
-
-  const createOrUpdateUser = async (user, token) => {
+  const createOrUpdateUser = async () => {
     try {
       console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
       const res = await fetch(`${backendApiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${user.id}`,
         },
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
@@ -54,6 +38,12 @@ const App = () => {
       console.error('Error creating/updating user:', error);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      createOrUpdateUser();
+    }
+  }, [user]);
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -107,13 +97,11 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = await getToken(); // Get the token from Clerk
-      console.log('Token to be sent:', token); // Log the token being sent
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include the token here
+          'Authorization': `Bearer ${user.id}`, // Include the clerkId here
         },
         body: JSON.stringify({
           ...details,
