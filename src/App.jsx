@@ -6,7 +6,7 @@ import TableDetails from './components/TableDetails';
 import Menu from './components/Menu';
 import RestaurantDetails from './components/RestaurantDetails';
 import './App.css';
-import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
 
 const backendApiUrl = import.meta.env.VITE_CLERK_BACKEND_API;
 
