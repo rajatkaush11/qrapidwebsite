@@ -116,10 +116,7 @@ const App = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`, // Include the token here
         },
-        body: JSON.stringify({
-          ...details,
-          owner: user.id, // Add user ID as owner
-        }),
+        body: JSON.stringify(details), // Remove owner from body as backend will handle it
       });
       const data = await res.json();
       console.log('Restaurant Details:', data);
@@ -128,6 +125,7 @@ const App = () => {
       console.error('Error submitting restaurant details:', error);
     }
   };
+  
   
 
   const renderPage = () => {
