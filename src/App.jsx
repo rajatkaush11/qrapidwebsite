@@ -54,7 +54,6 @@ const App = () => {
       console.error('Error creating/updating user:', error);
     }
   };
-  
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -118,7 +117,7 @@ const App = () => {
         },
         body: JSON.stringify({
           ...details,
-          owner: user.id, // Add user ID as owner
+          clerkId: user.id, // Use clerkId instead of owner
         }),
       });
       const data = await res.json();
