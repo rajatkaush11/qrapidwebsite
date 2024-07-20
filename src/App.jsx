@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
@@ -43,6 +44,8 @@ const App = () => {
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
           clerkId: user.id,
+          // Add password field if applicable
+          password: user.password || undefined, // Ensure password is included if available
         }),
       });
       const data = await res.json();
@@ -51,6 +54,7 @@ const App = () => {
       console.error('Error creating/updating user:', error);
     }
   };
+  
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
