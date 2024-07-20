@@ -6,7 +6,7 @@ import TableDetails from './components/TableDetails';
 import Menu from './components/Menu';
 import RestaurantDetails from './components/RestaurantDetails';
 import './App.css';
-import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
 
 const backendApiUrl = import.meta.env.VITE_CLERK_BACKEND_API;
 
@@ -16,16 +16,31 @@ const App = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
   const { user } = useUser();
+  const { getToken } = useAuth();
 
-  const createOrUpdateUser = async () => {
+  useEffect(() => {
+    const logToken = async () => {
+      if (user) {
+        try {
+          const token = await getToken();
+          console.log('User Token:', token);
+          await createOrUpdateUser(user, token);
+        } catch (error) {
+          console.error('Error fetching token:', error);
+        }
+      }
+    };
+    logToken();
+  }, [user, getToken]);
+
+  const createOrUpdateUser = async (user, token) => {
     try {
-      const token = user.tokens[0].token; // Assuming the token is stored in user.tokens
       console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
       const res = await fetch(`${backendApiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Use token here
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
@@ -39,12 +54,7 @@ const App = () => {
       console.error('Error creating/updating user:', error);
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      createOrUpdateUser();
-    }
-  }, [user]);
+  
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -98,22 +108,19 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = user.tokens[0].token; // Assuming the token is stored in user.tokens
+      const token = await getToken(); // Get the token from Clerk
+      console.log('Token to be sent:', token); // Log the token being sent
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Use token here
+          'Authorization': `Bearer ${token}`, // Include the token here
         },
         body: JSON.stringify({
           ...details,
-          clerkId: user.id, // Use clerkId instead of owner
+          owner: user.id, // Add user ID as owner
         }),
       });
-      if (!res.ok) {
-        const errorDetails = await res.text();
-        throw new Error(`Error submitting restaurant details: ${errorDetails}`);
-      }
       const data = await res.json();
       console.log('Restaurant Details:', data);
       setCurrentPage('TableOverview');
