@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
@@ -54,7 +53,29 @@ const App = () => {
       console.error('Error creating/updating user:', error);
     }
   };
-  
+
+  const handleSubmitRestaurantDetails = async (details) => {
+    try {
+      const token = await getToken(); // Get the token from Clerk
+      console.log('Token to be sent:', token); // Log the token being sent
+      const res = await fetch(`${backendApiUrl}/restaurants`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Include the token here
+        },
+        body: JSON.stringify({
+          ...details,
+          owner: user.id, // Add user ID as owner
+        }),
+      });
+      const data = await res.json();
+      console.log('Restaurant Details:', data);
+      setCurrentPage('TableOverview');
+    } catch (error) {
+      console.error('Error submitting restaurant details:', error);
+    }
+  };
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -105,31 +126,6 @@ const App = () => {
       }, 6000);
     }
   };
-
-  const handleSubmitRestaurantDetails = async (details) => {
-    try {
-      const token = await getToken(); // Get the token from Clerk
-      console.log('Token to be sent:', token); // Log the token being sent
-      const res = await fetch(`${backendApiUrl}/restaurants`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include the token here
-        },
-        body: JSON.stringify({
-          ...details,
-          owner: user.id, // Add user ID as owner
-        }),
-      });
-      const data = await res.json();
-      console.log('Restaurant Details:', data);
-      setCurrentPage('TableOverview');
-    } catch (error) {
-      console.error('Error submitting restaurant details:', error);
-    }
-  };
-  
-  
 
   const renderPage = () => {
     switch (currentPage) {
