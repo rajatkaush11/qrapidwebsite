@@ -35,6 +35,7 @@ const App = () => {
 
   const createOrUpdateUser = async (user, token) => {
     try {
+      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
       const res = await fetch(`${backendApiUrl}/users`, {
         method: 'POST',
         headers: {
@@ -48,7 +49,7 @@ const App = () => {
         }),
       });
       const data = await res.json();
-      console.log('User created/updated:', data);
+      console.log('User created/updated response:', data);
     } catch (error) {
       console.error('Error creating/updating user:', error);
     }
