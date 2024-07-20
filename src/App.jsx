@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
@@ -55,7 +54,6 @@ const App = () => {
     }
   };
   
-
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
     setTableColors([...tableColors, 'blank']);
@@ -128,8 +126,6 @@ const App = () => {
       console.error('Error submitting restaurant details:', error);
     }
   };
-  
-  
 
   const renderPage = () => {
     switch (currentPage) {
