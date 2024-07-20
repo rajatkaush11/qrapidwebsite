@@ -44,8 +44,7 @@ const App = () => {
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
           clerkId: user.id,
-          // Add password field if applicable
-          password: user.password || undefined, // Ensure password is included if available
+          isGoogleUser: true, // Indicate Google user
         }),
       });
       const data = await res.json();
