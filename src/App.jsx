@@ -7,6 +7,8 @@ import RestaurantDetails from './components/RestaurantDetails';
 import './App.css';
 import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
 
+const backendApiUrl = import.meta.env.VITE_CLERK_BACKEND_API;
+
 const App = () => {
   const [tables, setTables] = useState(Array.from({ length: 15 }, (_, index) => `T${index + 1}`));
   const [currentPage, setCurrentPage] = useState('RestaurantDetails');
@@ -32,7 +34,7 @@ const App = () => {
 
   const createOrUpdateUser = async (user, token) => {
     try {
-      const res = await fetch('http://localhost:5000/users', {
+      const res = await fetch(`${backendApiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +106,7 @@ const App = () => {
     try {
       const token = await getToken(); // Get the token from Clerk
       console.log('Token to be sent:', token); // Log the token being sent
-      const res = await fetch('http://localhost:5000/restaurants', {
+      const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
