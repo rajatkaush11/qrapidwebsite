@@ -1,0 +1,80 @@
+.login-page {
+    padding: 40px;
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #F7F7F7; /* Lightened the background color for a more premium feel */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-page h2 {
+    margin-bottom: 40px;
+    font-size: 32px;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .login-page form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .login-page .input-group {
+    display: flex;
+    flex-direction: column;
+    position: relative; /* For positioning the placeholder */
+  }
+  
+  .login-page label {
+    margin-bottom: 5px;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .login-page input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px; /* Added border radius for a more premium look */
+    background-color: #F2F2F2; /* Lightened the background color for a more premium feel */
+  }
+  
+  .login-page input::before {
+    content: attr(placeholder);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #8B9467; /* Changed the placeholder color to a muted greenish tone */
+    font-size: 14px;
+    font-style: italic; /* Added italic style to the placeholder text */
+    pointer-events: none; /* Prevent interaction with the placeholder text */
+    transition: all 0.2s ease;
+  }
+  
+  .login-page input.filled::before {
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .login-page input:not(.filled)::before {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .login-page button {
+    padding: 20px 40px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #34C759; /* Changed the button color to a vibrant greenish tone */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .login-page button:hover {
+    background-color: #2E865F; /* Changed the hover color to a darker greenish tone */
+  }
+  
