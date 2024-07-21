@@ -1,61 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
 import TableDetails from './components/TableDetails';
 import Menu from './components/Menu';
 import RestaurantDetails from './components/RestaurantDetails';
+import LoginPage from './components/LoginPage';
 import './App.css';
-import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
 
 const App = () => {
   const [tables, setTables] = useState(Array.from({ length: 15 }, (_, index) => `T${index + 1}`));
-  const [currentPage, setCurrentPage] = useState('RestaurantDetails');
+  const [currentPage, setCurrentPage] = useState('Login');
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
-  const { user } = useUser();
-  const { getToken } = useAuth();
-
-  useEffect(() => {
-    const logToken = async () => {
-      if (user) {
-        try {
-          const token = await getToken({ template: "your-template-name" });
-          console.log('User Token:', token);
-          await createOrUpdateUser(user, token);
-        } catch (error) {
-          console.error('Error fetching token:', error);
-        }
-      }
-    };
-    logToken();
-  }, [user, getToken]);
-
-  const createOrUpdateUser = async (user, token) => {
-    try {
-      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress);
-      const res = await fetch(`https://qrapidbackend.vercel.app/googleLogin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: user.primaryEmailAddress.emailAddress,
-          clerkId: user.id,
-          isGoogleUser: true,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
-      console.log('User created/updated response:', data);
-    } catch (error) {
-      console.error('Error creating/updating user:', error);
-    }
-  };
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -109,32 +66,15 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = await getToken({ template: "your-template-name" }); // Get the token from Clerk
-      if (!token) {
-        console.error('No token available');
-        throw new Error('No token available');
-      }
-
-      console.log('Token to be sent:', token); // Log the token being sent
-      console.log('Restaurant details to be sent:', details); // Log the details being sent
       const res = await fetch(`https://qrapidbackend.vercel.app/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include the token here
         },
-        body: JSON.stringify({
-          name: details.restaurantName,
-          address: details.address,
-          description: details.description,
-          timing: details.timing,
-          owner: user.id, // Add user ID as owner
-        }),
+        body: JSON.stringify(details),
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        console.error('Error response from server:', errorData); // Log the error response
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
@@ -146,7 +86,27 @@ const App = () => {
     }
   };
 
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    setCurrentPage('RestaurantDetails');
+  };
+
+  const handleRegister = () => {
+    setCurrentPage('Login');
+  };
+
   const renderPage = () => {
+    if (!isAuthenticated) {
+      switch (currentPage) {
+        case 'Login':
+          return <LoginPage onLogin={handleLogin} />;
+        case 'Register':
+          return <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />;
+        default:
+          return <LoginPage onLogin={handleLogin} />;
+      }
+    }
+
     switch (currentPage) {
       case 'RestaurantDetails':
         return <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />;
@@ -171,13 +131,7 @@ const App = () => {
     <div>
       <Navbar activePage={currentPage} onLinkClick={handleLinkClick} />
       <div className="content">
-        <SignedIn>{renderPage()}</SignedIn>
-        <SignedOut>
-          <div className="signin-container">
-            <h1>Welcome! Please sign in to access the Admin Dashboard</h1>
-            <SignInButton mode="modal" className="clerk-sign-in-button" />
-          </div>
-        </SignedOut>
+        {renderPage()}
       </div>
     </div>
   );

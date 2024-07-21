@@ -1,4 +1,4 @@
-.restaurant-details {
+.restaurant-details, .login-page {
   padding: 40px;
   max-width: 700px;
   margin: 0 auto;
@@ -8,33 +8,33 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.restaurant-details h2 {
+.restaurant-details h2, .login-page h2 {
   margin-bottom: 40px;
   font-size: 32px;
   color: #333;
   font-weight: bold;
 }
 
-.restaurant-details form {
+.restaurant-details form, .login-page form {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.restaurant-details .input-group {
+.restaurant-details .input-group, .login-page .input-group {
   display: flex;
   flex-direction: column;
   position: relative; /* For positioning the placeholder */
 }
 
-.restaurant-details label {
+.restaurant-details label, .login-page label {
   margin-bottom: 5px;
   font-size: 18px;
   color: #333;
   font-weight: bold;
 }
 
-.restaurant-details input {
+.restaurant-details input, .login-page input {
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -42,7 +42,7 @@
   background-color: #F2F2F2; /* Lightened the background color for a more premium feel */
 }
 
-.restaurant-details input::before {
+.restaurant-details input::before, .login-page input::before {
   content: attr(placeholder);
   position: absolute;
   top: 10px;
@@ -54,17 +54,17 @@
   transition: all 0.2s ease;
 }
 
-.restaurant-details input.filled::before {
+.restaurant-details input.filled::before, .login-page input.filled::before {
   opacity: 0;
   visibility: hidden;
 }
 
-.restaurant-details input:not(.filled)::before {
+.restaurant-details input:not(.filled)::before, .login-page input:not(.filled)::before {
   opacity: 1;
   visibility: visible;
 }
 
-.restaurant-details button {
+.restaurant-details button, .login-page button {
   padding: 20px 40px;
   font-size: 18px;
   color: #fff;
@@ -74,6 +74,6 @@
   cursor: pointer;
 }
 
-.restaurant-details button:hover {
+.restaurant-details button:hover, .login-page button:hover {
   background-color: #2E865F; /* Changed the hover color to a darker greenish tone */
 }

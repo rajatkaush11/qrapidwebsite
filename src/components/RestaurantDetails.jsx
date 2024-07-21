@@ -6,16 +6,18 @@ const RestaurantDetails = ({ onSubmit }) => {
   const [address, setAddress] = useState('');
   const [description, setDescription] = useState('');
   const [timing, setTiming] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const details = { restaurantName, address, description, timing };
+    const details = { restaurantName, address, description, timing, email, password };
     onSubmit(details);
   };
 
   return (
     <div className="restaurant-details">
-      <h2>Restaurant Details</h2>
+      <h2>Register Restaurant</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>Name of the Restaurant:</label>
@@ -57,7 +59,27 @@ const RestaurantDetails = ({ onSubmit }) => {
             className={timing ? 'filled' : ''}
           />
         </div>
-        <button type="submit">Submit Details</button>
+        <div className="input-group">
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="e.g., example@example.com"
+            className={email ? 'filled' : ''}
+          />
+        </div>
+        <div className="input-group">
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            className={password ? 'filled' : ''}
+          />
+        </div>
+        <button type="submit">Register</button>
       </form>
     </div>
   );
