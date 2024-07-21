@@ -107,13 +107,13 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = await getToken();
-      console.log('Token to be sent:', token);
+      const token = await getToken(); // Get the token from Clerk
+      console.log('Token to be sent:', token); // Log the token being sent
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`, // Include the token here
         },
         body: JSON.stringify({
           name: details.restaurantName,
@@ -129,7 +129,7 @@ const App = () => {
       console.error('Error submitting restaurant details:', error);
     }
   };
-
+  
   const renderPage = () => {
     switch (currentPage) {
       case 'RestaurantDetails':
