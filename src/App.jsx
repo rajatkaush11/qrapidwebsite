@@ -86,19 +86,20 @@ const App = () => {
     }
   };
 
-  const handleLogin = (registering) => {
+  const handleLogin = () => {
     setIsAuthenticated(true);
-    setCurrentPage(registering ? 'RestaurantDetails' : 'TableOverview');
+    setCurrentPage('TableOverview');
   };
 
   const renderPage = () => {
     if (!isAuthenticated) {
       switch (currentPage) {
         case 'Login':
+          return <LoginPage onLogin={handleLogin} onRegister={() => setCurrentPage('Register')} />;
         case 'Register':
-          return <LoginPage onLogin={handleLogin} />;
+          return <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />;
         default:
-          return <LoginPage onLogin={handleLogin} />;
+          return <LoginPage onLogin={handleLogin} onRegister={() => setCurrentPage('Register')} />;
       }
     }
 

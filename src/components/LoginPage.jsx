@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
 
-const LoginPage = ({ onLogin }) => {
+const LoginPage = ({ onLogin, onRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Perform login or register logic here
-    onLogin(isRegistering);
+    onLogin();
   };
 
   return (
     <div className="login-page">
-      <h2>{isRegistering ? 'Register' : 'Login'}</h2>
+      <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>Email:</label>
@@ -34,13 +32,13 @@ const LoginPage = ({ onLogin }) => {
             required
           />
         </div>
-        <button type="submit">{isRegistering ? 'Register' : 'Login'}</button>
+        <button type="submit">Login</button>
         <button
           type="button"
-          onClick={() => setIsRegistering(!isRegistering)}
+          onClick={onRegister}
           className="toggle-button"
         >
-          {isRegistering ? 'Switch to Login' : 'Switch to Register'}
+          Register
         </button>
       </form>
     </div>
