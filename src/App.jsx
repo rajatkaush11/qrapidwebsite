@@ -23,13 +23,13 @@ const App = () => {
       if (user) {
         try {
           const token = await getToken();
-          console.log('User Token:', token);
+          console.log('User Token:', token); // Verify the token value here
           await createOrUpdateUser(user, token);
         } catch (error) {
           console.error('Error fetching token:', error);
         }
       }
-    };
+    };    
     logToken();
   }, [user, getToken]);
 
@@ -107,7 +107,7 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = await getToken(); // Get the token from Clerk
+      const token = await getToken();
       console.log('Token to be sent:', token); // Log the token being sent
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
@@ -128,8 +128,7 @@ const App = () => {
     } catch (error) {
       console.error('Error submitting restaurant details:', error);
     }
-  };
-  
+  };  
   const renderPage = () => {
     switch (currentPage) {
       case 'RestaurantDetails':
