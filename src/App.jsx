@@ -35,7 +35,7 @@ const App = () => {
   const createOrUpdateUser = async (user, token) => {
     try {
       console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress);
-      const res = await fetch(`${backendApiUrl}/users`, {
+      const res = await fetch(`${backendApiUrl}/googleLogin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
