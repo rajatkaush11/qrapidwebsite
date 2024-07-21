@@ -118,7 +118,7 @@ const App = () => {
         },
         body: JSON.stringify({
           ...details,
-          owner: user.id, // Add user ID as owner
+          clientId: user.id, // Use the Clerk user ID as clientId
         }),
       });
       const data = await res.json();
@@ -128,7 +128,8 @@ const App = () => {
       console.error('Error submitting restaurant details:', error);
     }
   };
-
+  
+  
   const renderPage = () => {
     switch (currentPage) {
       case 'RestaurantDetails':

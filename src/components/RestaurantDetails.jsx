@@ -9,7 +9,7 @@ const RestaurantDetails = ({ onSubmit }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const details = { restaurantName, address, description, timing };
+    const details = { name: restaurantName, address, description, timing };
     onSubmit(details);
   };
 
