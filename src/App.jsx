@@ -110,6 +110,11 @@ const App = () => {
   const handleSubmitRestaurantDetails = async (details) => {
     try {
       const token = await getToken(); // Get the token from Clerk
+      if (!token) {
+        console.error('No token available');
+        throw new Error('No token available');
+      }
+
       console.log('Token to be sent:', token); // Log the token being sent
       console.log('Restaurant details to be sent:', details); // Log the details being sent
       const res = await fetch(`https://qrapidbackend.vercel.app/restaurants`, {
