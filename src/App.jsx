@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
@@ -5,7 +6,7 @@ import TableDetails from './components/TableDetails';
 import Menu from './components/Menu';
 import RestaurantDetails from './components/RestaurantDetails';
 import './App.css';
-import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
 
 const backendApiUrl = import.meta.env.VITE_CLERK_BACKEND_API;
 
@@ -15,36 +16,45 @@ const App = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
   const { user } = useUser();
+  const { getToken } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      fetchRestaurantDetails();
-    }
-  }, [user]);
+    const logToken = async () => {
+      if (user) {
+        try {
+          const token = await getToken();
+          console.log('User Token:', token);
+          await createOrUpdateUser(user, token);
+        } catch (error) {
+          console.error('Error fetching token:', error);
+        }
+      }
+    };
+    logToken();
+  }, [user, getToken]);
 
-  const fetchRestaurantDetails = async () => {
+  const createOrUpdateUser = async (user, token) => {
     try {
-      const clientId = user.id;
-
-      const res = await fetch(`${backendApiUrl}/restaurants?clientId=${clientId}`, {
-        method: 'GET',
+      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
+      const res = await fetch(`${backendApiUrl}/users`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          email: user.primaryEmailAddress.emailAddress,
+          clerkId: user.id,
+          isGoogleUser: true, // Indicate Google user
+        }),
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
       const data = await res.json();
-      console.log('Fetched Restaurant Details:', data);
-      // Handle the fetched restaurant details
+      console.log('User created/updated response:', data);
     } catch (error) {
-      console.error('Error fetching restaurant details:', error);
+      console.error('Error creating/updating user:', error);
     }
   };
+  
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -98,26 +108,21 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const clientId = user.id;
-
+      const token = await getToken(); // Get the token from Clerk
+      console.log('Token to be sent:', token); // Log the token being sent
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${token}`, // Include the token here
         },
         body: JSON.stringify({
           ...details,
-          clientId,
+          owner: user.id, // Add user ID as owner
         }),
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
       const data = await res.json();
-      console.log('Restaurant Details submitted:', data);
+      console.log('Restaurant Details:', data);
       setCurrentPage('TableOverview');
     } catch (error) {
       console.error('Error submitting restaurant details:', error);
@@ -160,6 +165,5 @@ const App = () => {
     </div>
   );
 };
-
 
 export default App;
