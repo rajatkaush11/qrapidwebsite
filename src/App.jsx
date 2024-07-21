@@ -109,14 +109,11 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = await getToken(); // Get the token from Clerk
-      if (!token) {
-        console.error('No token available');
-        throw new Error('No token available');
-      }
+      const { restaurantName, address, description, timing, token } = details;
 
       console.log('Token to be sent:', token); // Log the token being sent
-      console.log('Restaurant details to be sent:', details); // Log the details being sent
+      console.log('Restaurant details to be sent:', { restaurantName, address, description, timing }); // Log the details being sent
+
       const res = await fetch(`https://qrapidbackend.vercel.app/restaurants`, {
         method: 'POST',
         headers: {
@@ -124,10 +121,10 @@ const App = () => {
           'Authorization': `Bearer ${token}`, // Include the token here
         },
         body: JSON.stringify({
-          name: details.restaurantName,
-          address: details.address,
-          description: details.description,
-          timing: details.timing,
+          name: restaurantName,
+          address: address,
+          description: description,
+          timing: timing,
           owner: user.id, // Add user ID as owner
         }),
       });

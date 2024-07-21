@@ -6,10 +6,11 @@ const RestaurantDetails = ({ onSubmit }) => {
   const [address, setAddress] = useState('');
   const [description, setDescription] = useState('');
   const [timing, setTiming] = useState('');
+  const [token, setToken] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const details = { restaurantName, address, description, timing };
+    const details = { restaurantName, address, description, timing, token };
     onSubmit(details);
   };
 
@@ -55,6 +56,16 @@ const RestaurantDetails = ({ onSubmit }) => {
             onChange={(e) => setTiming(e.target.value)}
             placeholder="e.g., 10 AM - 10 PM"
             className={timing ? 'filled' : ''}
+          />
+        </div>
+        <div className="input-group">
+          <label>Token:</label>
+          <input
+            type="text"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            placeholder="Enter token"
+            className={token ? 'filled' : ''}
           />
         </div>
         <button type="submit">Submit Details</button>
