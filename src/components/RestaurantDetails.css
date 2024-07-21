@@ -1,0 +1,79 @@
+.restaurant-details {
+  padding: 40px;
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: #F7F7F7; /* Lightened the background color for a more premium feel */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.restaurant-details h2 {
+  margin-bottom: 40px;
+  font-size: 32px;
+  color: #333;
+  font-weight: bold;
+}
+
+.restaurant-details form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.restaurant-details .input-group {
+  display: flex;
+  flex-direction: column;
+  position: relative; /* For positioning the placeholder */
+}
+
+.restaurant-details label {
+  margin-bottom: 5px;
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+}
+
+.restaurant-details input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Added border radius for a more premium look */
+  background-color: #F2F2F2; /* Lightened the background color for a more premium feel */
+}
+
+.restaurant-details input::before {
+  content: attr(placeholder);
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #8B9467; /* Changed the placeholder color to a muted greenish tone */
+  font-size: 14px;
+  font-style: italic; /* Added italic style to the placeholder text */
+  pointer-events: none; /* Prevent interaction with the placeholder text */
+  transition: all 0.2s ease;
+}
+
+.restaurant-details input.filled::before {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.restaurant-details input:not(.filled)::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.restaurant-details button {
+  padding: 20px 40px;
+  font-size: 18px;
+  color: #fff;
+  background-color: #34C759; /* Changed the button color to a vibrant greenish tone */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.restaurant-details button:hover {
+  background-color: #2E865F; /* Changed the hover color to a darker greenish tone */
+}

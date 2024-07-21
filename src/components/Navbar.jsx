@@ -1,47 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './NavBar.css';
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faBell } from '@fortawesome/free-solid-svg-icons';
+import { UserButton } from '@clerk/clerk-react';  // Import UserButton from Clerk
+import './Navbar.css';
 
-const Navbar = ({ setActiveCategory }) => {
-  const [categories, setCategories] = useState([]);
+const Navbar = ({ activePage, onLinkClick }) => {
+    const [searchActive, setSearchActive] = useState(false);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const token = localStorage.getItem('token');
-      const restaurantId = localStorage.getItem('restaurantId');
-      if (!token || !restaurantId) {
-        console.error('Token or restaurant ID not found in localStorage');
-        return;
-      }
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_BACKEND_API}/categories/${restaurantId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
+    const handleSearchClick = () => {
+        setSearchActive(!searchActive);
     };
 
-    fetchCategories();
-  }, []);
-
-  return (
-    <nav className="navbar">
-      <ul>
-        {categories.map((category) => (
-          <li key={category._id}>
-            <button
-              className="category-button"
-              onClick={() => setActiveCategory(category._id)}
-            >
-              {category.name}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
+    return (
+        <div className="navbar">
+            <UserButton afterSignOutUrl="/" /> {/* Add UserButton component here */}
+            <div className="brand">QRAPID</div>
+            <div className="nav-links">
+                <a 
+                    href="#"
+                    onClick={() => onLinkClick('TableOverview')}
+                    className={activePage === 'TableOverview' ? 'active-link' : ''}
+                >
+                    Table
+                </a>
+                <a 
+                    href="#"
+                    onClick={() => onLinkClick('Dashboard')}
+                    className={activePage === 'Dashboard' ? 'active-link' : ''}
+                >
+                    Dashboard
+                </a>
+                <a 
+                    href="#"
+                    onClick={() => onLinkClick('Menu')}
+                    className={activePage === 'Menu' ? 'active-link' : ''}
+                >
+                    Menu
+                </a>
+                <a 
+                    href="#"
+                    onClick={() => onLinkClick('Orders')}
+                    className={activePage === 'Orders' ? 'active-link' : ''}
+                >
+                    Orders
+                </a>
+                <a 
+                    href="#"
+                    onClick={() => onLinkClick('Reports')}
+                    className={activePage === 'Reports' ? 'active-link' : ''}
+                >
+                    Reports
+                </a>
+            </div>
+            <div className="right-icons">
+                <FontAwesomeIcon icon={faSearch} onClick={handleSearchClick} className="icon" />
+                <input 
+                    type="text" 
+                    placeholder="Search..." 
+                    className={`search-input ${searchActive ? 'active' : ''}`} 
+                />
+                <FontAwesomeIcon icon={faBell} className="icon" />
+            </div>
+        </div>
+    );
 };
 
 export default Navbar;

@@ -1,92 +1,65 @@
-import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+import React from 'react';
 import './Menu.css';
-import FoodItemCard from './FoodItemCard';
 
-const Menu = ({ addItem, cart, updateItemCount, activeCategory, searchTerm }) => {
-  const [sections, setSections] = useState([]);
-  const sectionRefs = useRef({});
-
-  useEffect(() => {
-    const fetchCategoriesAndItems = async () => {
-      const token = localStorage.getItem('token');
-      const restaurantId = localStorage.getItem('restaurantId');
-      if (!token || !restaurantId) {
-        console.error('Token or restaurant ID not found in localStorage');
-        return;
-      }
-      try {
-        const categoriesResponse = await axios.get(`${import.meta.env.VITE_APP_BASE_BACKEND_API}/categories/${restaurantId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        const categories = categoriesResponse.data;
-        const sectionsWithItems = await Promise.all(
-          categories.map(async (category) => {
-            const itemsResponse = await axios.get(`${import.meta.env.VITE_APP_BASE_BACKEND_API}/items/${category._id}`, {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            });
-            sectionRefs.current[category._id] = React.createRef();
-            return {
-              id: category._id,
-              title: category.name,
-              items: itemsResponse.data
-            };
-          })
-        );
-        setSections(sectionsWithItems);
-      } catch (error) {
-        console.error('Error fetching categories or items:', error);
-      }
-    };
-
-    fetchCategoriesAndItems();
-  }, []);
-
-  useEffect(() => {
-    if (activeCategory && sectionRefs.current[activeCategory]) {
-      sectionRefs.current[activeCategory].current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [activeCategory]);
-
-  const filteredSections = sections
-    .map((section) => ({
-      ...section,
-      items: section.items.filter((item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }))
-    .filter((section) => section.items.length > 0);
-
-  return (
-    <div className="menu">
-      {filteredSections.map((section) => (
-        <div key={section.id} ref={sectionRefs.current[section.id]} className="menu-section">
-          <h2>{section.title}</h2>
-          <div className="menu-items-container">
-            <div className="menu-items">
-              {section.items.map((item) => {
-                const cartItem = cart.find(cartItem => cartItem._id === item._id);
-                const quantity = cartItem ? cartItem.quantity : 0;
-                return (
-                  <FoodItemCard 
-                    key={item._id} 
-                    item={item} 
-                    addItem={addItem} 
-                    quantity={quantity}
-                    updateItemCount={updateItemCount} 
-                  />
-                );
-              })}
+const Menu = () => {
+    return (
+        <div className="menu-container">
+            <div className="menu-header">
+                <h1>Edit Menu</h1>
+                <button className="add-food-category-btn">+ Add Food Category</button>
             </div>
-          </div>
+            <div className="menu-tabs">
+                <a href="#" className="active">All</a>
+                <a href="#">Popular Items</a>
+                <a href="#">Featured</a>
+                <a href="#">Combos</a>
+                <a href="#">Family Bundles</a>
+                <a href="#">Desserts</a>
+            </div>
+            <div className="menu-items">
+                <div className="menu-item">
+                    <img src="burger.jpg" alt="Classic Burger" />
+                    <div className="menu-item-details">
+                        <h2>Classic Burger</h2>
+                        <p>2 options</p>
+                    </div>
+                    <button className="edit-btn">Edit</button>
+                </div>
+                <div className="menu-item">
+                    <img src="fries.jpg" alt="French Fries" />
+                    <div className="menu-item-details">
+                        <h2>French Fries</h2>
+                        <p>2 options</p>
+                    </div>
+                    <button className="edit-btn">Edit</button>
+                </div>
+                <div className="menu-item">
+                    <img src="ice-cream.jpg" alt="Ice Cream" />
+                    <div className="menu-item-details">
+                        <h2>Ice Cream</h2>
+                        <p>2 options</p>
+                    </div>
+                    <button className="edit-btn">Edit</button>
+                </div>
+                <div className="menu-item">
+                    <img src="fried-chicken.jpg" alt="Fried Chicken" />
+                    <div className="menu-item-details">
+                        <h2>Fried Chicken</h2>
+                        <p>2 options</p>
+                    </div>
+                    <button className="edit-btn">Edit</button>
+                </div>
+                <div className="menu-item">
+                    <img src="salad.jpg" alt="Salad" />
+                    <div className="menu-item-details">
+                        <h2>Salad</h2>
+                        <p>2 options</p>
+                    </div>
+                    <button className="edit-btn">Edit</button>
+                </div>
+            </div>
         </div>
-      ))}
-    </div>
-  );
+    );
 };
 
 export default Menu;
