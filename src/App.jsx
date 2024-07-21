@@ -66,7 +66,7 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const res = await fetch(`https://qrapidbackend.vercel.app/restaurants`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,10 +89,6 @@ const App = () => {
   const handleLogin = () => {
     setIsAuthenticated(true);
     setCurrentPage('RestaurantDetails');
-  };
-
-  const handleRegister = () => {
-    setCurrentPage('Login');
   };
 
   const renderPage = () => {
