@@ -27,6 +27,7 @@ const RestaurantDetails = ({ onSubmit }) => {
             onChange={(e) => setRestaurantName(e.target.value)}
             placeholder="e.g., The Great Bistro"
             className={restaurantName ? 'filled' : ''}
+            required
           />
         </div>
         <div className="input-group">
@@ -37,6 +38,7 @@ const RestaurantDetails = ({ onSubmit }) => {
             onChange={(e) => setAddress(e.target.value)}
             placeholder="e.g., 123 Main Street, City"
             className={address ? 'filled' : ''}
+            required
           />
         </div>
         <div className="input-group">
@@ -47,6 +49,7 @@ const RestaurantDetails = ({ onSubmit }) => {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="e.g., Cozy place with a variety of dishes"
             className={description ? 'filled' : ''}
+            required
           />
         </div>
         <div className="input-group">
@@ -57,6 +60,7 @@ const RestaurantDetails = ({ onSubmit }) => {
             onChange={(e) => setTiming(e.target.value)}
             placeholder="e.g., 10 AM - 10 PM"
             className={timing ? 'filled' : ''}
+            required
           />
         </div>
         <div className="input-group">
@@ -67,6 +71,7 @@ const RestaurantDetails = ({ onSubmit }) => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="e.g., example@example.com"
             className={email ? 'filled' : ''}
+            required
           />
         </div>
         <div className="input-group">
@@ -77,6 +82,7 @@ const RestaurantDetails = ({ onSubmit }) => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
             className={password ? 'filled' : ''}
+            required
           />
         </div>
         <button type="submit">Register</button>
