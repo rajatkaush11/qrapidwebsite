@@ -1,159 +1,175 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
-import TableOverview from './components/TableOverview';
-import TableDetails from './components/TableDetails';
-import Menu from './components/Menu';
-import RestaurantDetails from './components/RestaurantDetails';
 import './App.css';
-import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
+import Header from './components/Header';
+import SearchBar from './components/SearchBar';
+import Navbar from './components/NavBar';
+import Menu from './components/Menu';
+import CartItem from './components/CartItem';
+import BackToTopButton from './components/BackToTopButton'; // Import the BackToTopButton component
 import axios from 'axios';
 
-const backendApiUrl = import.meta.env.VITE_CLERK_BACKEND_API;
-
 const App = () => {
-  const [tables, setTables] = useState(Array.from({ length: 15 }, (_, index) => `T${index + 1}`));
-  const [currentPage, setCurrentPage] = useState('RestaurantDetails');
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
-  const { user } = useUser();
-  const { getToken } = useAuth();
+  const [cart, setCart] = useState([]);
+  const [showCartItem, setShowCartItem] = useState(false);
+  const [showPlaceOrderPage, setShowPlaceOrderPage] = useState(false);
+  const [restaurantName, setRestaurantName] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFixed, setIsFixed] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false); // State for Back to Top button visibility
 
   useEffect(() => {
-    const logToken = async () => {
-      if (user) {
-        try {
-          const token = await getToken();
-          console.log('User Token:', token);
-          await createOrUpdateUser(user, token);
-        } catch (error) {
-          console.error('Error fetching token:', error);
+    const backendApiUrl = import.meta.env.VITE_APP_BASE_BACKEND_API;
+
+    const fetchUsersAndToken = async () => {
+      try {
+        const usersResponse = await axios.get(`${backendApiUrl}/users`);
+        console.log('Users response:', usersResponse.data);
+        const users = usersResponse.data;
+        if (users && users.length > 0) {
+          const firstUserId = users[0]._id;
+          const tokenResponse = await axios.get(`${backendApiUrl}/token/${firstUserId}`);
+          console.log('Token response:', tokenResponse.data);
+          const token = tokenResponse.data.token;
+          if (token) {
+            localStorage.setItem('token', token);
+            const restaurantResponse = await fetchRestaurant(token);
+            console.log('Restaurant response:', restaurantResponse);
+            if (restaurantResponse && restaurantResponse._id) {
+              localStorage.setItem('restaurantId', restaurantResponse._id);
+              console.log('Set restaurantId in localStorage:', restaurantResponse._id);
+            }
+          }
+        } else {
+          console.error('No users found');
         }
+      } catch (error) {
+        console.error('Error fetching users or token:', error);
       }
     };
-    logToken();
-  }, [user, getToken]);
 
-  const createOrUpdateUser = async (user, token) => {
+    fetchUsersAndToken();
+  }, []);
+
+  const fetchRestaurant = async (token) => {
     try {
-      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
-      const res = await axios.post(`${backendApiUrl}/users`, {
-        email: user.primaryEmailAddress.emailAddress,
-        clerkId: user.id,
-        isGoogleUser: true, // Indicate Google user
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await axios.get(`${import.meta.env.VITE_APP_BASE_BACKEND_API}/restaurants`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('User created/updated response:', res.data);
+      console.log('Fetched restaurant data:', response.data);
+      setRestaurantName(response.data.name);
+      setIsLoggedIn(true);
+      return response.data;
     } catch (error) {
-      console.error('Error creating/updating user:', error);
+      console.error('Error fetching restaurant data:', error);
     }
   };
 
-  const addTable = () => {
-    setTables([...tables, `T${tables.length + 1}`]);
-    setTableColors([...tableColors, 'blank']);
+  const addItem = (item) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find(cartItem => cartItem._id === item._id);
+      if (existingItem) {
+        return prevCart.map(cartItem =>
+          cartItem._id === item._id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prevCart, { ...item, quantity: 1 }];
+      }
+    });
   };
 
-  const handleLinkClick = (page) => {
-    setCurrentPage(page);
-    setSelectedTable(null);
+  const getTotalItems = () => cart.reduce((total, item) => total + item.quantity, 0);
+
+  const handleViewOrderClick = () => {
+    setShowCartItem(true);
+    setShowPlaceOrderPage(false);
   };
 
-  const handleSelectTable = (tableNumber) => {
-    setSelectedTable(tableNumber);
-    setCurrentPage('TableDetails');
+  const handleCartClick = () => {
+    setShowCartItem(true);
+    setShowPlaceOrderPage(false);
   };
 
-  const handleBackClick = () => {
-    setCurrentPage('TableOverview');
-    setSelectedTable(null);
+  const removeItem = (itemToRemove) => {
+    setCart((prevCart) => prevCart.filter((item) => item._id !== itemToRemove._id));
   };
 
-  const updateTableColor = (tableIndex, color) => {
-    const updatedColors = [...tableColors];
-    updatedColors[tableIndex] = color;
-    setTableColors(updatedColors);
+  const updateItemCount = (itemId, countChange) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item._id === itemId ? { ...item, quantity: item.quantity + countChange } : item
+      ).filter(item => item.quantity > 0)
+    );
   };
 
-  const handleGenerateKOT = () => {
-    if (selectedTable) {
-      const tableIndex = tables.indexOf(selectedTable);
-      updateTableColor(tableIndex, 'running-kot');
-    }
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      if (offset > 100) { // Adjust this value as needed
+        setIsFixed(true);
+      } else {
+        setIsFixed(false);
+      }
+      if (offset > 300) { // Show Back to Top button after scrolling down 300px
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
 
-  const handleGenerateBill = () => {
-    if (selectedTable) {
-      const tableIndex = tables.indexOf(selectedTable);
-      updateTableColor(tableIndex, 'printed');
-    }
-  };
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
-  const handleComplete = () => {
-    if (selectedTable) {
-      const tableIndex = tables.indexOf(selectedTable);
-      updateTableColor(tableIndex, 'paid');
-      setTimeout(() => {
-        updateTableColor(tableIndex, 'blank');
-      }, 6000);
-    }
-  };
-
-  const handleSubmitRestaurantDetails = async (details) => {
-    try {
-      const token = await getToken(); // Get the token from Clerk
-      console.log('Token to be sent:', token); // Log the token being sent
-      const res = await axios.post(`${backendApiUrl}/restaurants`, {
-        ...details,
-        owner: user.id, // Add user ID as owner
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      console.log('Restaurant Details:', res.data);
-      setCurrentPage('TableOverview');
-    } catch (error) {
-      console.error('Error submitting restaurant details:', error);
-    }
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'RestaurantDetails':
-        return <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />;
-      case 'TableOverview':
-        return <TableOverview tables={tables} addTable={addTable} onSelectTable={handleSelectTable} tableColors={tableColors} />;
-      case 'TableDetails':
-        return <TableDetails tableNumber={selectedTable} onBackClick={handleBackClick} onGenerateKOT={handleGenerateKOT} onGenerateBill={handleGenerateBill} onComplete={handleComplete} />;
-      case 'Dashboard':
-        return <div>Dashboard Content</div>;
-      case 'Menu':
-        return <Menu />;
-      case 'Orders':
-        return <div>Orders Content</div>;
-      case 'Reports':
-        return <div>Reports Content</div>;
-      default:
-        return <TableOverview tables={tables} addTable={addTable} onSelectTable={handleSelectTable} tableColors={tableColors} />;
-    }
-  };
+  if (!isLoggedIn) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div>
-      <Navbar activePage={currentPage} onLinkClick={handleLinkClick} />
-      <div className="content">
-        <SignedIn>{renderPage()}</SignedIn>
-        <SignedOut>
-          <div className="signin-container">
-            <h1>Welcome! Please sign in to access the Admin Dashboard</h1>
-            <SignInButton mode="modal" className="clerk-sign-in-button" />
-          </div>
-        </SignedOut>
+    <div className="app">
+      <div className="header-container">
+        <Header restaurantName={restaurantName} />
       </div>
+      <div className={`search-cart-container ${isFixed ? 'fixed' : ''}`}>
+        <SearchBar setSearchTerm={setSearchTerm} />
+        <button className="cart-button" onClick={handleCartClick}>🛒</button>
+      </div>
+      <div className={`navbar ${isFixed ? 'fixed' : ''}`}>
+        <Navbar setActiveCategory={setActiveCategory} />
+      </div>
+      <div className={`content-container ${isFixed ? 'fixed-margin' : ''}`}>
+        <Menu 
+          addItem={addItem}
+          cart={cart}
+          updateItemCount={updateItemCount}
+          activeCategory={activeCategory}
+          searchTerm={searchTerm}
+        />
+      </div>
+      {!showCartItem && getTotalItems() > 0 && (
+        <div className="view-order-bar" onClick={handleViewOrderClick}>
+          <span>View Order</span>
+          <span className="order-count">{getTotalItems()}</span>
+        </div>
+      )}
+      {showCartItem && (
+        <CartItem
+          cartItems={cart}
+          setCart={setCart}
+          removeItem={removeItem}
+          setShowCartItem={setShowCartItem}
+          updateItemCount={updateItemCount}
+        />
+      )}
+      {showPlaceOrderPage && (
+        <PlaceOrderPage cartItems={cart} setShowPlaceOrderPage={setShowPlaceOrderPage} />
+      )}
+      {!showCartItem && <BackToTopButton isVisible={showBackToTop} />}
     </div>
   );
 };
