@@ -47,6 +47,11 @@ const App = () => {
           isGoogleUser: true,
         }),
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const data = await res.json();
       console.log('User created/updated response:', data);
     } catch (error) {
@@ -122,6 +127,11 @@ const App = () => {
           owner: user.id, // Add user ID as owner
         }),
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const data = await res.json();
       console.log('Restaurant Details:', data);
       setCurrentPage('TableOverview');
