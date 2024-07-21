@@ -1,10 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TableBox from './TableBox';
 import './TableOverview.css';
 
-const TableOverview = ({ tables, addTable, onSelectTable, tableColors }) => {
+const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout }) => {
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeRoom, setActiveRoom] = useState('AC Premium');
+    const [restaurantName, setRestaurantName] = useState('QRapid');
+
+    useEffect(() => {
+        const fetchRestaurantDetails = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurant`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        setRestaurantName(data.name);
+                    } else {
+                        console.error('Failed to fetch restaurant details');
+                    }
+                } catch (error) {
+                    console.error('Error fetching restaurant details:', error);
+                }
+            }
+        };
+
+        fetchRestaurantDetails();
+    }, []);
 
     const handleTableClick = (tableNumber) => {
         setSelectedTable(tableNumber);
@@ -18,8 +47,9 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors }) => {
     return (
         <div className="table-overview">
             <div className="header">
-                <h1>QRapid - Table Overview</h1>
+                <h1>{restaurantName} - Table Overview</h1>
                 <button className="add-table-btn" onClick={addTable}>+ Add Table</button>
+                <button className="logout-btn" onClick={onLogout}>Logout</button>
             </div>
             <div className="room-button-group">
                 <button

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
 import TableDetails from './components/TableDetails';
@@ -13,6 +13,37 @@ const App = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [restaurantName, setRestaurantName] = useState('');
+
+  useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurant`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            setRestaurantName(data.name);
+          } else {
+            console.error('Failed to fetch restaurant details');
+          }
+        } catch (error) {
+          console.error('Error fetching restaurant details:', error);
+        }
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchRestaurantDetails();
+    }
+  }, [isAuthenticated]);
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -73,6 +104,12 @@ const App = () => {
     setCurrentPage('TableOverview');
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentPage('Login');
+    localStorage.removeItem('token');
+  };
+
   const renderPage = () => {
     if (!isAuthenticated) {
       switch (currentPage) {
@@ -89,7 +126,15 @@ const App = () => {
       case 'RestaurantDetails':
         return <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />;
       case 'TableOverview':
-        return <TableOverview tables={tables} addTable={addTable} onSelectTable={handleSelectTable} tableColors={tableColors} />;
+        return (
+          <TableOverview
+            tables={tables}
+            addTable={addTable}
+            onSelectTable={handleSelectTable}
+            tableColors={tableColors}
+            onLogout={handleLogout}
+          />
+        );
       case 'TableDetails':
         return <TableDetails tableNumber={selectedTable} onBackClick={handleBackClick} onGenerateKOT={handleGenerateKOT} onGenerateBill={handleGenerateBill} onComplete={handleComplete} />;
       case 'Dashboard':
