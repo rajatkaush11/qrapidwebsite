@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
@@ -6,7 +7,6 @@ import Menu from './components/Menu';
 import RestaurantDetails from './components/RestaurantDetails';
 import './App.css';
 import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
-import axios from 'axios';
 
 const backendApiUrl = import.meta.env.VITE_CLERK_BACKEND_API;
 
@@ -24,7 +24,6 @@ const App = () => {
         try {
           const token = await getToken();
           console.log('User Token:', token);
-          localStorage.setItem('userToken', token); // Store token in local storage
           await createOrUpdateUser(user, token);
         } catch (error) {
           console.error('Error fetching token:', error);
@@ -36,35 +35,92 @@ const App = () => {
 
   const createOrUpdateUser = async (user, token) => {
     try {
-      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress);
-      const res = await axios.post(`${backendApiUrl}/users`, {
-        email: user.primaryEmailAddress.emailAddress,
-        clerkId: user.id,
-        isGoogleUser: true,
-        token,
-      }, {
+      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
+      const res = await fetch(`${backendApiUrl}/users`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          email: user.primaryEmailAddress.emailAddress,
+          clerkId: user.id,
+          isGoogleUser: true,
+          token, // Include the token here
+        }),
       });
-      console.log('User created/updated response:', res.data);
+      const data = await res.json();
+      console.log('User created/updated response:', data);
     } catch (error) {
       console.error('Error creating/updating user:', error);
+    }
+  };
+  
+
+  const addTable = () => {
+    setTables([...tables, `T${tables.length + 1}`]);
+    setTableColors([...tableColors, 'blank']);
+  };
+
+  const handleLinkClick = (page) => {
+    setCurrentPage(page);
+    setSelectedTable(null);
+  };
+
+  const handleSelectTable = (tableNumber) => {
+    setSelectedTable(tableNumber);
+    setCurrentPage('TableDetails');
+  };
+
+  const handleBackClick = () => {
+    setCurrentPage('TableOverview');
+    setSelectedTable(null);
+  };
+
+  const updateTableColor = (tableIndex, color) => {
+    const updatedColors = [...tableColors];
+    updatedColors[tableIndex] = color;
+    setTableColors(updatedColors);
+  };
+
+  const handleGenerateKOT = () => {
+    if (selectedTable) {
+      const tableIndex = tables.indexOf(selectedTable);
+      updateTableColor(tableIndex, 'running-kot');
+    }
+  };
+
+  const handleGenerateBill = () => {
+    if (selectedTable) {
+      const tableIndex = tables.indexOf(selectedTable);
+      updateTableColor(tableIndex, 'printed');
+    }
+  };
+
+  const handleComplete = () => {
+    if (selectedTable) {
+      const tableIndex = tables.indexOf(selectedTable);
+      updateTableColor(tableIndex, 'paid');
+      setTimeout(() => {
+        updateTableColor(tableIndex, 'blank');
+      }, 6000);
     }
   };
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = localStorage.getItem('userToken'); // Retrieve token from local storage
-      console.log('Token to be sent:', token);
-      const res = await axios.post(`${backendApiUrl}/restaurants`, details, {
+      const token = await getToken(); // Get the token from Clerk
+      console.log('Token to be sent:', token); // Log the token being sent
+      const res = await fetch(`${backendApiUrl}/restaurants`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`, // Include the token here
         },
+        body: JSON.stringify(details),
       });
-      console.log('Restaurant Details:', res.data);
+      const data = await res.json();
+      console.log('Restaurant Details:', data);
       setCurrentPage('TableOverview');
     } catch (error) {
       console.error('Error submitting restaurant details:', error);
