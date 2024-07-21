@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
@@ -35,7 +35,7 @@ const App = () => {
 
   const createOrUpdateUser = async (user, token) => {
     try {
-      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
+      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress);
       const res = await fetch(`${backendApiUrl}/users`, {
         method: 'POST',
         headers: {
@@ -45,7 +45,7 @@ const App = () => {
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
           clerkId: user.id,
-          isGoogleUser: true, // Indicate Google user
+          isGoogleUser: true,
         }),
       });
       const data = await res.json();
@@ -54,7 +54,7 @@ const App = () => {
       console.error('Error creating/updating user:', error);
     }
   };
-  
+
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
     setTableColors([...tableColors, 'blank']);
@@ -107,13 +107,13 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = await getToken(); // Get the token from Clerk
-      console.log('Token to be sent:', token); // Log the token being sent
+      const token = await getToken();
+      console.log('Token to be sent:', token);
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include the token here
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: details.restaurantName,
