@@ -24,13 +24,13 @@ const App = () => {
 
   const fetchRestaurantDetails = async () => {
     try {
-      const clientId = user.id; // Assuming clientId is the user's ID from Clerk
-      console.log('Fetching restaurant details for clientId:', clientId);
+      const clientId = user.id;
 
       const res = await fetch(`${backendApiUrl}/restaurants?clientId=${clientId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
         },
       });
 
@@ -52,19 +52,16 @@ const App = () => {
   };
 
   const handleLinkClick = (page) => {
-    console.log('Navigating to page:', page);
     setCurrentPage(page);
     setSelectedTable(null);
   };
 
   const handleSelectTable = (tableNumber) => {
-    console.log('Selected table:', tableNumber);
     setSelectedTable(tableNumber);
     setCurrentPage('TableDetails');
   };
 
   const handleBackClick = () => {
-    console.log('Navigating back to TableOverview');
     setCurrentPage('TableOverview');
     setSelectedTable(null);
   };
@@ -73,7 +70,6 @@ const App = () => {
     const updatedColors = [...tableColors];
     updatedColors[tableIndex] = color;
     setTableColors(updatedColors);
-    console.log(`Updated color of table ${tables[tableIndex]} to ${color}`);
   };
 
   const handleGenerateKOT = () => {
@@ -102,17 +98,17 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const clientId = user.id; // Assuming clientId is the user's ID from Clerk
-      console.log('Submitting restaurant details for clientId:', clientId);
+      const clientId = user.id;
 
       const res = await fetch(`${backendApiUrl}/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
         },
         body: JSON.stringify({
           ...details,
-          clientId, // Include the clientId here
+          clientId,
         }),
       });
 
