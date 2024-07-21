@@ -125,7 +125,9 @@ const App = () => {
 
   return (
     <div>
-      <Navbar activePage={currentPage} onLinkClick={handleLinkClick} />
+      {isAuthenticated && currentPage !== 'Login' && currentPage !== 'Register' && (
+        <Navbar activePage={currentPage} onLinkClick={handleLinkClick} />
+      )}
       <div className="content">
         {renderPage()}
       </div>
