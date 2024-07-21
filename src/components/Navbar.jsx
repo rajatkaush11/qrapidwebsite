@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faBell } from '@fortawesome/free-solid-svg-icons';
-import { UserButton } from '@clerk/clerk-react';  // Import UserButton from Clerk
 import './Navbar.css';
 
 const Navbar = ({ activePage, onLinkClick }) => {
@@ -13,7 +12,6 @@ const Navbar = ({ activePage, onLinkClick }) => {
 
     return (
         <div className="navbar">
-            <UserButton afterSignOutUrl="/" /> {/* Add UserButton component here */}
             <div className="brand">QRAPID</div>
             <div className="nav-links">
                 <a 
