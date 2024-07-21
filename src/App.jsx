@@ -45,8 +45,7 @@ const App = () => {
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
           clerkId: user.id,
-          isGoogleUser: true,
-          token, // Include the token here
+          isGoogleUser: true, // Indicate Google user
         }),
       });
       const data = await res.json();
@@ -117,7 +116,10 @@ const App = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`, // Include the token here
         },
-        body: JSON.stringify(details),
+        body: JSON.stringify({
+          ...details,
+          owner: user.id, // Add user ID as owner
+        }),
       });
       const data = await res.json();
       console.log('Restaurant Details:', data);
