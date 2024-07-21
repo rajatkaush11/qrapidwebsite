@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
@@ -35,7 +34,7 @@ const App = () => {
 
   const createOrUpdateUser = async (user, token) => {
     try {
-      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
+      console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress);
       const res = await fetch(`${backendApiUrl}/users`, {
         method: 'POST',
         headers: {
@@ -45,7 +44,7 @@ const App = () => {
         body: JSON.stringify({
           email: user.primaryEmailAddress.emailAddress,
           clerkId: user.id,
-          isGoogleUser: true, // Indicate Google user
+          isGoogleUser: true,
         }),
       });
       const data = await res.json();
@@ -54,7 +53,6 @@ const App = () => {
       console.error('Error creating/updating user:', error);
     }
   };
-  
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -117,7 +115,10 @@ const App = () => {
           'Authorization': `Bearer ${token}`, // Include the token here
         },
         body: JSON.stringify({
-          ...details,
+          name: details.restaurantName,
+          address: details.address,
+          description: details.description,
+          timing: details.timing,
           owner: user.id, // Add user ID as owner
         }),
       });
