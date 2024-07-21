@@ -55,7 +55,6 @@ const App = () => {
     }
   };
   
-
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
     setTableColors([...tableColors, 'blank']);
@@ -117,8 +116,10 @@ const App = () => {
           'Authorization': `Bearer ${token}`, // Include the token here
         },
         body: JSON.stringify({
-          ...details,
-          owner: user.id, // Add user ID as owner
+          name: details.restaurantName,
+          address: details.address,
+          description: details.description,
+          timing: details.timing,
         }),
       });
       const data = await res.json();
