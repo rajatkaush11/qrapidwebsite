@@ -64,26 +64,8 @@ const App = () => {
     }
   };
 
-  const handleSubmitRestaurantDetails = async (details) => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurants`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(details),
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
-      console.log('Restaurant Details:', data);
-      setCurrentPage('TableOverview');
-    } catch (error) {
-      console.error('Error submitting restaurant details:', error);
-    }
+  const handleSubmitRestaurantDetails = () => {
+    setCurrentPage('Login');
   };
 
   const handleLogin = () => {

@@ -4,10 +4,32 @@ import './LoginPage.css';
 const LoginPage = ({ onLogin, onRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin();
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('token', data.token);
+        setMessage('Successfully logged in');
+        onLogin();
+      } else {
+        const error = await res.json();
+        setMessage(error.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+      setMessage('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -32,6 +54,7 @@ const LoginPage = ({ onLogin, onRegister }) => {
             required
           />
         </div>
+        {message && <p>{message}</p>}
         <button type="submit">Login</button>
         <button
           type="button"

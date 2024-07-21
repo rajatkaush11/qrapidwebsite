@@ -8,11 +8,30 @@ const RestaurantDetails = ({ onSubmit }) => {
   const [timing, setTiming] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const details = { restaurantName, address, description, timing, email, password };
-    onSubmit(details);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ restaurantName, address, description, timing, email, password }),
+      });
+
+      if (res.ok) {
+        setMessage('Registered successfully. Please log in.');
+        setTimeout(() => onSubmit(), 2000);
+      } else {
+        const error = await res.json();
+        setMessage(error.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Error registering:', error);
+      setMessage('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -85,6 +104,7 @@ const RestaurantDetails = ({ onSubmit }) => {
             required
           />
         </div>
+        {message && <p>{message}</p>}
         <button type="submit">Register</button>
       </form>
     </div>
