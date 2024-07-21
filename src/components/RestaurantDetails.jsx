@@ -1,4 +1,3 @@
-// src/components/RestaurantDetails.jsx
 import React, { useState } from 'react';
 import './RestaurantDetails.css';
 
