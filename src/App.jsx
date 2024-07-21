@@ -111,6 +111,8 @@ const App = () => {
     try {
       const token = await getToken(); // Get the token from Clerk
       console.log('Token to be sent:', token); // Log the token being sent
+      console.log('Restaurant details to be sent:', details); // Log the details being sent
+
       const res = await fetch(`https://qrapidbackend.vercel.app/restaurants`, {
         method: 'POST',
         headers: {
@@ -127,6 +129,8 @@ const App = () => {
       });
 
       if (!res.ok) {
+        const errorDetails = await res.json();
+        console.error('Error response from server:', errorDetails);
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
