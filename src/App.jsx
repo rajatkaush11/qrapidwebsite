@@ -7,6 +7,7 @@ import Menu from './components/Menu';
 import RestaurantDetails from './components/RestaurantDetails';
 import './App.css';
 import { SignedIn, SignedOut, SignInButton, useUser, useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
 
 const backendApiUrl = import.meta.env.VITE_CLERK_BACKEND_API;
 
@@ -36,25 +37,20 @@ const App = () => {
   const createOrUpdateUser = async (user, token) => {
     try {
       console.log('Creating/updating user with email:', user.primaryEmailAddress.emailAddress); // Log user email
-      const res = await fetch(`${backendApiUrl}/users`, {
-        method: 'POST',
+      const res = await axios.post(`${backendApiUrl}/users`, {
+        email: user.primaryEmailAddress.emailAddress,
+        clerkId: user.id,
+        isGoogleUser: true, // Indicate Google user
+      }, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: user.primaryEmailAddress.emailAddress,
-          clerkId: user.id,
-          isGoogleUser: true, // Indicate Google user
-        }),
+          'Authorization': `Bearer ${token}`
+        }
       });
-      const data = await res.json();
-      console.log('User created/updated response:', data);
+      console.log('User created/updated response:', res.data);
     } catch (error) {
       console.error('Error creating/updating user:', error);
     }
   };
-  
 
   const addTable = () => {
     setTables([...tables, `T${tables.length + 1}`]);
@@ -110,19 +106,15 @@ const App = () => {
     try {
       const token = await getToken(); // Get the token from Clerk
       console.log('Token to be sent:', token); // Log the token being sent
-      const res = await fetch(`${backendApiUrl}/restaurants`, {
-        method: 'POST',
+      const res = await axios.post(`${backendApiUrl}/restaurants`, {
+        ...details,
+        owner: user.id, // Add user ID as owner
+      }, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include the token here
-        },
-        body: JSON.stringify({
-          ...details,
-          owner: user.id, // Add user ID as owner
-        }),
+          'Authorization': `Bearer ${token}`
+        }
       });
-      const data = await res.json();
-      console.log('Restaurant Details:', data);
+      console.log('Restaurant Details:', res.data);
       setCurrentPage('TableOverview');
     } catch (error) {
       console.error('Error submitting restaurant details:', error);

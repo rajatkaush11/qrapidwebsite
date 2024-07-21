@@ -1,3 +1,4 @@
+// src/components/RestaurantDetails.js
 import React, { useState } from 'react';
 import './RestaurantDetails.css';
 
