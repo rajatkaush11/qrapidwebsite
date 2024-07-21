@@ -62,4 +62,5 @@ const RestaurantDetails = ({ onSubmit }) => {
     </div>
   );
 };
+
 export default RestaurantDetails;
