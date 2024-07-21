@@ -19,7 +19,7 @@ const App = () => {
     const logToken = async () => {
       if (user) {
         try {
-          const token = await getToken();
+          const token = await getToken({ template: "your-template-name" });
           console.log('User Token:', token);
           await createOrUpdateUser(user, token);
         } catch (error) {
@@ -109,7 +109,7 @@ const App = () => {
 
   const handleSubmitRestaurantDetails = async (details) => {
     try {
-      const token = await getToken(); // Get the token from Clerk
+      const token = await getToken({ template: "your-template-name" }); // Get the token from Clerk
       if (!token) {
         console.error('No token available');
         throw new Error('No token available');
