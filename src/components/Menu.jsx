@@ -40,6 +40,17 @@ const Menu = () => {
         setNewCategory({ ...newCategory, [name]: value });
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewCategory({ ...newCategory, image: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleAddCategory = async () => {
         if (newCategory.name && userId) {
             try {
@@ -49,7 +60,7 @@ const Menu = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if required
                     },
-                    body: JSON.stringify({ name: newCategory.name, userId }),
+                    body: JSON.stringify({ name: newCategory.name, userId, image: newCategory.image }),
                 });
                 if (response.ok) {
                     const addedCategory = await response.json();
@@ -80,22 +91,22 @@ const Menu = () => {
                 <a href="#">Desserts</a>
             </div>
             {showCategoryInput && (
-                <div className="new-category-container">
+                <div className="new-category-item">
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleFileChange} 
+                        className="new-category-input"
+                    />
                     <input 
                         type="text" 
                         name="name" 
                         placeholder="Name of the Category" 
                         value={newCategory.name} 
                         onChange={handleInputChange} 
+                        className="new-category-input"
                     />
-                    <input 
-                        type="text" 
-                        name="image" 
-                        placeholder="Add Image URL" 
-                        value={newCategory.image} 
-                        onChange={handleInputChange} 
-                    />
-                    <button className="add-btn" onClick={handleAddCategory}>Add</button>
+                    <button className="add-category-btn" onClick={handleAddCategory}>Add</button>
                 </div>
             )}
             <div className="menu-items">
