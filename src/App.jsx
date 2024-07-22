@@ -18,6 +18,7 @@ const App = () => {
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
             const token = localStorage.getItem('token');
+            console.log('Fetched token from localStorage:', token);
             if (token) {
                 try {
                     const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurant`, {
@@ -30,6 +31,7 @@ const App = () => {
 
                     if (res.ok) {
                         const data = await res.json();
+                        console.log('Fetched restaurant details:', data);
                         setRestaurantName(data.name);
                     } else {
                         console.error('Failed to fetch restaurant details');
@@ -46,26 +48,31 @@ const App = () => {
     }, [isAuthenticated]);
 
     const addTable = () => {
+        console.log('Adding a new table');
         setTables([...tables, `T${tables.length + 1}`]);
         setTableColors([...tableColors, 'blank']);
     };
 
     const handleLinkClick = (page) => {
+        console.log('Navigating to page:', page);
         setCurrentPage(page);
         setSelectedTable(null);
     };
 
     const handleSelectTable = (tableNumber) => {
+        console.log('Selected table:', tableNumber);
         setSelectedTable(tableNumber);
         setCurrentPage('TableDetails');
     };
 
     const handleBackClick = () => {
+        console.log('Going back to TableOverview');
         setCurrentPage('TableOverview');
         setSelectedTable(null);
     };
 
     const updateTableColor = (tableIndex, color) => {
+        console.log(`Updating color of table ${tableIndex} to ${color}`);
         const updatedColors = [...tableColors];
         updatedColors[tableIndex] = color;
         setTableColors(updatedColors);
@@ -73,6 +80,7 @@ const App = () => {
 
     const handleGenerateKOT = () => {
         if (selectedTable) {
+            console.log('Generating KOT for table:', selectedTable);
             const tableIndex = tables.indexOf(selectedTable);
             updateTableColor(tableIndex, 'running-kot');
         }
@@ -80,6 +88,7 @@ const App = () => {
 
     const handleGenerateBill = () => {
         if (selectedTable) {
+            console.log('Generating bill for table:', selectedTable);
             const tableIndex = tables.indexOf(selectedTable);
             updateTableColor(tableIndex, 'printed');
         }
@@ -87,6 +96,7 @@ const App = () => {
 
     const handleComplete = () => {
         if (selectedTable) {
+            console.log('Completing order for table:', selectedTable);
             const tableIndex = tables.indexOf(selectedTable);
             updateTableColor(tableIndex, 'paid');
             setTimeout(() => {
@@ -96,15 +106,18 @@ const App = () => {
     };
 
     const handleSubmitRestaurantDetails = () => {
+        console.log('Submitting restaurant details');
         setCurrentPage('Login');
     };
 
     const handleLogin = () => {
+        console.log('Login successful');
         setIsAuthenticated(true);
         setCurrentPage('TableOverview');
     };
 
     const handleLogout = () => {
+        console.log('Logging out');
         setIsAuthenticated(false);
         setCurrentPage('Login');
         localStorage.removeItem('token');

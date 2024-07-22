@@ -12,6 +12,10 @@ const RestaurantDetails = ({ onSubmit }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log('Register attempt with details:', {
+            restaurantName, address, description, timing, email, password
+        });
+
         try {
             const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/register`, {
                 method: 'POST',
@@ -22,10 +26,12 @@ const RestaurantDetails = ({ onSubmit }) => {
             });
 
             if (res.ok) {
+                console.log('Registration successful');
                 setMessage('Registered successfully. Please log in.');
                 setTimeout(() => onSubmit(), 2000);
             } else {
                 const error = await res.json();
+                console.log('Registration failed:', error);
                 setMessage(error.message || 'Registration failed');
             }
         } catch (error) {

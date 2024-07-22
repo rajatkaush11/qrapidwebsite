@@ -8,6 +8,8 @@ const LoginPage = ({ onLogin, onRegister }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Login attempt with email:', email, 'and password:', password);
+
         try {
             const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/login`, {
                 method: 'POST',
@@ -19,12 +21,14 @@ const LoginPage = ({ onLogin, onRegister }) => {
 
             if (res.ok) {
                 const data = await res.json();
+                console.log('Login successful:', data);
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('userId', data.userId); // Store the userId
                 setMessage('Successfully logged in');
                 onLogin();
             } else {
                 const error = await res.json();
+                console.log('Login failed:', error);
                 setMessage(error.message || 'Login failed');
             }
         } catch (error) {
