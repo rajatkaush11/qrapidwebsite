@@ -36,6 +36,7 @@ const LoginPage = ({ onLogin, onRegister }) => {
             setMessage('An error occurred. Please try again.');
         }
     };
+    
 
     return (
         <div className="login-page">
