@@ -6,6 +6,8 @@ const ItemList = () => {
     const { categoryId } = useParams();
     const [items, setItems] = useState([]);
     const [newItem, setNewItem] = useState({ name: '', price: '', description: '', image: '', weight: '', unit: '' });
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
     const apiBaseUrl = import.meta.env.VITE_BACKEND_API; // Use the environment variable for the base URL
 
     useEffect(() => {
@@ -71,6 +73,38 @@ const ItemList = () => {
         }
     };
 
+    const handleDeleteItem = async () => {
+        if (itemToDelete) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/items/${itemToDelete._id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if required
+                    },
+                });
+                if (response.ok) {
+                    setItems(items.filter(item => item._id !== itemToDelete._id));
+                    setShowDeleteConfirmation(false);
+                    setItemToDelete(null);
+                } else {
+                    console.error('Failed to delete item');
+                }
+            } catch (error) {
+                console.error('Error deleting item:', error);
+            }
+        }
+    };
+
+    const confirmDeleteItem = (item) => {
+        setItemToDelete(item);
+        setShowDeleteConfirmation(true);
+    };
+
+    const cancelDeleteItem = () => {
+        setItemToDelete(null);
+        setShowDeleteConfirmation(false);
+    };
+
     return (
         <div className="item-list-container">
             <h1>Items</h1>
@@ -89,13 +123,23 @@ const ItemList = () => {
                         <img src={item.image} alt={item.name} />
                         <div className="item-details">
                             <h2>{item.name}</h2>
-                            <p>{item.price}</p>
-                            <p>{item.description}</p>
-                            <p>{item.weight} {item.unit}</p>
+                            <p>Price: {item.price}</p>
+                            <p>Description: {item.description}</p>
+                            <p>Weight: {item.weight} {item.unit}</p>
+                            <div className="item-actions">
+                                <button onClick={() => confirmDeleteItem(item)}>Delete</button>
+                            </div>
                         </div>
                     </div>
                 ))}
             </div>
+            {showDeleteConfirmation && (
+                <div className="delete-confirmation">
+                    <p>Are you sure you want to delete this item?</p>
+                    <button onClick={handleDeleteItem}>Yes</button>
+                    <button onClick={cancelDeleteItem}>No</button>
+                </div>
+            )}
         </div>
     );
 };
