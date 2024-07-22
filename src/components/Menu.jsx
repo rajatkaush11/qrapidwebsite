@@ -5,6 +5,7 @@ const Menu = () => {
     const [categories, setCategories] = useState([]);
     const [showCategoryInput, setShowCategoryInput] = useState(false);
     const [newCategory, setNewCategory] = useState({ name: '', image: '' });
+    const [editingCategory, setEditingCategory] = useState(null);
     const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
     const apiBaseUrl = import.meta.env.VITE_BACKEND_API; // Use the environment variable for the base URL
 
@@ -33,6 +34,7 @@ const Menu = () => {
 
     const handleAddCategoryClick = () => {
         setShowCategoryInput(true);
+        setEditingCategory(null); // Ensure we are not in editing mode
     };
 
     const handleInputChange = (e) => {
@@ -76,11 +78,48 @@ const Menu = () => {
         }
     };
 
+    const handleEditCategory = (category) => {
+        setEditingCategory(category);
+        setNewCategory({ name: category.name, image: category.image });
+        setShowCategoryInput(true);
+    };
+
+    const handleUpdateCategory = async () => {
+        if (newCategory.name && editingCategory && userId) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/categories/${editingCategory._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if required
+                    },
+                    body: JSON.stringify({ name: newCategory.name, image: newCategory.image }),
+                });
+                if (response.ok) {
+                    const updatedCategory = await response.json();
+                    const updatedCategories = categories.map((cat) =>
+                        cat._id === updatedCategory._id ? updatedCategory : cat
+                    );
+                    setCategories(updatedCategories);
+                    setNewCategory({ name: '', image: '' });
+                    setEditingCategory(null);
+                    setShowCategoryInput(false);
+                } else {
+                    console.error('Failed to update category');
+                }
+            } catch (error) {
+                console.error('Error updating category:', error);
+            }
+        }
+    };
+
     return (
         <div className="menu-container">
             <div className="menu-header">
                 <h1>Edit Menu</h1>
-                <button className="add-food-category-btn" onClick={handleAddCategoryClick}>+ Add Food Category</button>
+                <button className="add-food-category-btn" onClick={handleAddCategoryClick}>
+                    {editingCategory ? 'Edit Category' : '+ Add Food Category'}
+                </button>
             </div>
             <div className="menu-tabs">
                 <a href="#" className="active">All</a>
@@ -92,21 +131,26 @@ const Menu = () => {
             </div>
             {showCategoryInput && (
                 <div className="new-category-item">
-                    <input 
-                        type="file" 
-                        accept="image/*" 
-                        onChange={handleFileChange} 
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
                         className="new-category-input"
                     />
-                    <input 
-                        type="text" 
-                        name="name" 
-                        placeholder="Name of the Category" 
-                        value={newCategory.name} 
-                        onChange={handleInputChange} 
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Name of the Category"
+                        value={newCategory.name}
+                        onChange={handleInputChange}
                         className="new-category-input"
                     />
-                    <button className="add-category-btn" onClick={handleAddCategory}>Add</button>
+                    <button
+                        className="add-category-btn"
+                        onClick={editingCategory ? handleUpdateCategory : handleAddCategory}
+                    >
+                        {editingCategory ? 'Update' : 'Add'}
+                    </button>
                 </div>
             )}
             <div className="menu-items">
@@ -115,6 +159,9 @@ const Menu = () => {
                         <img src={category.image} alt={category.name} />
                         <div className="menu-item-details">
                             <h2>{category.name}</h2>
+                            <button onClick={() => handleEditCategory(category)} className="edit-category-btn">
+                                Edit
+                            </button>
                         </div>
                     </div>
                 ))}
