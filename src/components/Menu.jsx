@@ -15,7 +15,8 @@ const Menu = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch(`${apiBaseUrl}/categories/${userId}`, {
+            console.log(`Fetching categories for user ${userId}`);
+            const response = await fetch(`${apiBaseUrl}/categories`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if required
@@ -23,6 +24,7 @@ const Menu = () => {
             });
             if (response.ok) {
                 const data = await response.json();
+                console.log('Fetched categories:', data);
                 setCategories(data);
             } else {
                 console.error('Failed to fetch categories');
@@ -56,6 +58,7 @@ const Menu = () => {
     const handleAddCategory = async () => {
         if (newCategory.name && userId) {
             try {
+                console.log('Adding category:', newCategory);
                 const response = await fetch(`${apiBaseUrl}/categories`, {
                     method: 'POST',
                     headers: {
@@ -87,6 +90,7 @@ const Menu = () => {
     const handleUpdateCategory = async () => {
         if (newCategory.name && editingCategory && userId) {
             try {
+                console.log('Updating category:', newCategory);
                 const response = await fetch(`${apiBaseUrl}/categories/${editingCategory._id}`, {
                     method: 'PUT',
                     headers: {
