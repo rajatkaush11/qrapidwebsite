@@ -9,7 +9,7 @@ const Menu = () => {
     const [editingCategory, setEditingCategory] = useState(null);
     const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
     const apiBaseUrl = import.meta.env.VITE_BACKEND_API; // Use the environment variable for the base URL
-    const navigate = useNavigate(); // Use useNavigate hook for navigation
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCategories();
@@ -17,6 +17,7 @@ const Menu = () => {
 
     const fetchCategories = async () => {
         try {
+            console.log(`Fetching categories for user ${userId}`);
             const response = await fetch(`${apiBaseUrl}/categories`, {
                 method: 'GET',
                 headers: {
@@ -25,6 +26,7 @@ const Menu = () => {
             });
             if (response.ok) {
                 const data = await response.json();
+                console.log('Fetched categories:', data);
                 setCategories(data);
             } else {
                 console.error('Failed to fetch categories');
@@ -58,6 +60,7 @@ const Menu = () => {
     const handleAddCategory = async () => {
         if (newCategory.name && userId) {
             try {
+                console.log('Adding category:', newCategory);
                 const response = await fetch(`${apiBaseUrl}/categories`, {
                     method: 'POST',
                     headers: {
@@ -89,6 +92,7 @@ const Menu = () => {
     const handleUpdateCategory = async () => {
         if (newCategory.name && editingCategory && userId) {
             try {
+                console.log('Updating category:', newCategory);
                 const response = await fetch(`${apiBaseUrl}/categories/${editingCategory._id}`, {
                     method: 'PUT',
                     headers: {
@@ -115,8 +119,8 @@ const Menu = () => {
         }
     };
 
-    const handleCategoryClick = (categoryId) => {
-        navigate(`/category/${categoryId}/items`);
+    const handleCategoryClick = (category) => {
+        navigate(`/category/${category._id}/items`);
     };
 
     return (
@@ -161,7 +165,7 @@ const Menu = () => {
             )}
             <div className="menu-items">
                 {categories.map((category, index) => (
-                    <div className="menu-item" key={index} onClick={() => handleCategoryClick(category._id)}>
+                    <div className="menu-item" key={index} onClick={() => handleCategoryClick(category)}>
                         <img src={category.image} alt={category.name} />
                         <div className="menu-item-details">
                             <h2>{category.name}</h2>
