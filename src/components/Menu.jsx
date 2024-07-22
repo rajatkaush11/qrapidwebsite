@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Menu.css';
 
 const Menu = () => {
@@ -8,6 +9,7 @@ const Menu = () => {
     const [editingCategory, setEditingCategory] = useState(null);
     const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
     const apiBaseUrl = import.meta.env.VITE_BACKEND_API; // Use the environment variable for the base URL
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCategories();
@@ -117,6 +119,10 @@ const Menu = () => {
         }
     };
 
+    const handleCategoryClick = (category) => {
+        navigate(`/category/${category._id}/items`);
+    };
+
     return (
         <div className="menu-container">
             <div className="menu-header">
@@ -159,7 +165,7 @@ const Menu = () => {
             )}
             <div className="menu-items">
                 {categories.map((category, index) => (
-                    <div className="menu-item" key={index}>
+                    <div className="menu-item" key={index} onClick={() => handleCategoryClick(category)}>
                         <img src={category.image} alt={category.name} />
                         <div className="menu-item-details">
                             <h2>{category.name}</h2>

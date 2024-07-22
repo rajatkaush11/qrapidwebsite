@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import TableOverview from './components/TableOverview';
 import TableDetails from './components/TableDetails';
 import Menu from './components/Menu';
+import ItemList from './components/ItemList';
 import RestaurantDetails from './components/RestaurantDetails';
 import LoginPage from './components/LoginPage';
 import './App.css';
@@ -164,14 +166,19 @@ const App = () => {
     };
 
     return (
-        <div>
-            {isAuthenticated && currentPage !== 'Login' && currentPage !== 'Register' && (
-                <Navbar activePage={currentPage} onLinkClick={handleLinkClick} />
-            )}
-            <div className="content">
-                {renderPage()}
+        <Router>
+            <div>
+                {isAuthenticated && currentPage !== 'Login' && currentPage !== 'Register' && (
+                    <Navbar activePage={currentPage} onLinkClick={handleLinkClick} />
+                )}
+                <div className="content">
+                    <Routes>
+                        <Route path="/" element={renderPage()} />
+                        <Route path="/category/:categoryId/items" element={<ItemList />} />
+                    </Routes>
+                </div>
             </div>
-        </div>
+        </Router>
     );
 };
 
