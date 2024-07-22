@@ -7,6 +7,8 @@ const ItemList = () => {
     const [items, setItems] = useState([]);
     const [newItem, setNewItem] = useState({ name: '', price: '', description: '', image: '', weight: '', unit: '' });
     const [editingItem, setEditingItem] = useState(null);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
     const apiBaseUrl = import.meta.env.VITE_BACKEND_API; // Use the environment variable for the base URL
 
     useEffect(() => {
@@ -107,22 +109,36 @@ const ItemList = () => {
         // Logic to hide the item, e.g., setting a hidden property in the backend.
     };
 
-    const handleDeleteItem = async (itemId) => {
-        try {
-            const response = await fetch(`${apiBaseUrl}/items/${itemId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if required
-                },
-            });
-            if (response.ok) {
-                setItems(items.filter(item => item._id !== itemId));
-            } else {
-                console.error('Failed to delete item');
+    const handleDeleteItem = async () => {
+        if (itemToDelete) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/items/${itemToDelete._id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if required
+                    },
+                });
+                if (response.ok) {
+                    setItems(items.filter(item => item._id !== itemToDelete._id));
+                    setShowDeleteConfirmation(false);
+                    setItemToDelete(null);
+                } else {
+                    console.error('Failed to delete item');
+                }
+            } catch (error) {
+                console.error('Error deleting item:', error);
             }
-        } catch (error) {
-            console.error('Error deleting item:', error);
         }
+    };
+
+    const confirmDeleteItem = (item) => {
+        setItemToDelete(item);
+        setShowDeleteConfirmation(true);
+    };
+
+    const cancelDeleteItem = () => {
+        setItemToDelete(null);
+        setShowDeleteConfirmation(false);
     };
 
     return (
@@ -149,12 +165,19 @@ const ItemList = () => {
                             <div className="item-actions">
                                 <button onClick={() => handleEditItem(item)}>Edit</button>
                                 <button onClick={() => handleHideItem(item._id)}>Hide</button>
-                                <button onClick={() => handleDeleteItem(item._id)}>Delete</button>
+                                <button onClick={() => confirmDeleteItem(item)}>Delete</button>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
+            {showDeleteConfirmation && (
+                <div className="delete-confirmation">
+                    <p>Are you sure you want to delete this item?</p>
+                    <button onClick={handleDeleteItem}>Yes</button>
+                    <button onClick={cancelDeleteItem}>No</button>
+                </div>
+            )}
         </div>
     );
 };
