@@ -15,6 +15,7 @@ const ItemList = () => {
     }, []);
 
     const fetchItems = async () => {
+        console.log(`Fetching items for category ID: ${categoryId}`);
         try {
             const response = await fetch(`${apiBaseUrl}/items/${categoryId}`, {
                 method: 'GET',
