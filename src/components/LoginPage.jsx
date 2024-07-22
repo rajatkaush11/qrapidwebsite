@@ -20,6 +20,7 @@ const LoginPage = ({ onLogin, onRegister }) => {
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId); // Store the userId
         setMessage('Successfully logged in');
         onLogin();
       } else {
