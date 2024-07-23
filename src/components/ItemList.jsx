@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './ItemList.css';
 
 const ItemList = () => {
     const { categoryId } = useParams();
+    const navigate = useNavigate(); // useNavigate hook to handle navigation
     const [items, setItems] = useState([]);
     const [newItem, setNewItem] = useState({ name: '', price: '', description: '', image: '', weight: '', unit: '' });
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -106,8 +107,13 @@ const ItemList = () => {
         setShowDeleteConfirmation(false);
     };
 
+    const handleBack = () => {
+        navigate(-1); // Navigate back to the previous page
+    };
+
     return (
         <div className="item-list-container">
+            <button onClick={handleBack} className="back-button">Back to Categories</button>
             <h1>Items</h1>
             <div className="new-item-form">
                 <input type="file" accept="image/*" onChange={handleFileChange} />
