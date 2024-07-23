@@ -119,6 +119,27 @@ const Menu = () => {
         }
     };
 
+    const handleDeleteCategory = async (categoryId) => {
+        const confirmed = window.confirm('Are you sure you want to delete this category?');
+        if (confirmed) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/categories/${categoryId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                if (response.ok) {
+                    setCategories(categories.filter(category => category._id !== categoryId));
+                } else {
+                    console.error('Failed to delete category');
+                }
+            } catch (error) {
+                console.error('Error deleting category:', error);
+            }
+        }
+    };
+
     const handleCategoryClick = (category) => {
         navigate(`/category/${category._id}/items`);
     };
@@ -171,6 +192,9 @@ const Menu = () => {
                             <h2>{category.name}</h2>
                             <button onClick={() => handleEditCategory(category)} className="edit-category-btn">
                                 Edit
+                            </button>
+                            <button onClick={() => handleDeleteCategory(category._id)} className="delete-category-btn">
+                                Delete
                             </button>
                         </div>
                     </div>

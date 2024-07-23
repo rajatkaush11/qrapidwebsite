@@ -12,7 +12,7 @@ const ItemList = () => {
 
     useEffect(() => {
         fetchItems();
-    }, []);
+    }, [categoryId]); // Adding categoryId here to refetch items on change
 
     const fetchItems = async () => {
         console.log(`Fetching items for category ID: ${categoryId}`);
