@@ -29,7 +29,7 @@ const Menu = () => {
                 console.log('Fetched categories:', data);
                 setCategories(data);
             } else {
-                console.error('Failed to fetch categories', response.statusText);
+                console.error('Failed to fetch categories');
             }
         } catch (error) {
             console.error('Error fetching categories:', error);
@@ -75,7 +75,7 @@ const Menu = () => {
                     setNewCategory({ name: '', image: '' });
                     setShowCategoryInput(false);
                 } else {
-                    console.error('Failed to add category', response.statusText);
+                    console.error('Failed to add category');
                 }
             } catch (error) {
                 console.error('Error adding category:', error);
@@ -111,7 +111,7 @@ const Menu = () => {
                     setEditingCategory(null);
                     setShowCategoryInput(false);
                 } else {
-                    console.error('Failed to update category', response.statusText);
+                    console.error('Failed to update category');
                 }
             } catch (error) {
                 console.error('Error updating category:', error);
@@ -132,7 +132,7 @@ const Menu = () => {
                 if (response.ok) {
                     setCategories(categories.filter(category => category._id !== categoryId));
                 } else {
-                    console.error('Failed to delete category', response.statusText);
+                    console.error('Failed to delete category');
                 }
             } catch (error) {
                 console.error('Error deleting category:', error);
