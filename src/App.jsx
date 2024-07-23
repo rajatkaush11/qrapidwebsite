@@ -18,36 +18,44 @@ const App = () => {
     const [restaurantName, setRestaurantName] = useState('');
 
     useEffect(() => {
-        const fetchRestaurantDetails = async () => {
-            const token = localStorage.getItem('token');
-            console.log('Fetched token from localStorage:', token);
-            if (token) {
-                try {
-                    const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurant`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsAuthenticated(true);
+            setCurrentPage('TableOverview');
+        }
+    }, []);
 
-                    if (res.ok) {
-                        const data = await res.json();
-                        console.log('Fetched restaurant details:', data);
-                        setRestaurantName(data.name);
-                    } else {
-                        console.error('Failed to fetch restaurant details');
-                    }
-                } catch (error) {
-                    console.error('Error fetching restaurant details:', error);
-                }
-            }
-        };
-
+    useEffect(() => {
         if (isAuthenticated) {
             fetchRestaurantDetails();
         }
     }, [isAuthenticated]);
+
+    const fetchRestaurantDetails = async () => {
+        const token = localStorage.getItem('token');
+        console.log('Fetched token from localStorage:', token);
+        if (token) {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurant`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log('Fetched restaurant details:', data);
+                    setRestaurantName(data.name);
+                } else {
+                    console.error('Failed to fetch restaurant details');
+                }
+            } catch (error) {
+                console.error('Error fetching restaurant details:', error);
+            }
+        }
+    };
 
     const addTable = () => {
         console.log('Adding a new table');
@@ -125,46 +133,6 @@ const App = () => {
         localStorage.removeItem('token');
     };
 
-    const renderPage = () => {
-        if (!isAuthenticated) {
-            switch (currentPage) {
-                case 'Login':
-                    return <LoginPage onLogin={handleLogin} onRegister={() => setCurrentPage('Register')} />;
-                case 'Register':
-                    return <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />;
-                default:
-                    return <LoginPage onLogin={handleLogin} onRegister={() => setCurrentPage('Register')} />;
-            }
-        }
-
-        switch (currentPage) {
-            case 'RestaurantDetails':
-                return <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />;
-            case 'TableOverview':
-                return (
-                    <TableOverview
-                        tables={tables}
-                        addTable={addTable}
-                        onSelectTable={handleSelectTable}
-                        tableColors={tableColors}
-                        onLogout={handleLogout}
-                    />
-                );
-            case 'TableDetails':
-                return <TableDetails tableNumber={selectedTable} onBackClick={handleBackClick} onGenerateKOT={handleGenerateKOT} onGenerateBill={handleGenerateBill} onComplete={handleComplete} />;
-            case 'Dashboard':
-                return <div>Dashboard Content</div>;
-            case 'Menu':
-                return <Menu />;
-            case 'Orders':
-                return <div>Orders Content</div>;
-            case 'Reports':
-                return <div>Reports Content</div>;
-            default:
-                return <TableOverview tables={tables} addTable={addTable} onSelectTable={handleSelectTable} tableColors={tableColors} />;
-        }
-    };
-
     return (
         <Router>
             <div>
@@ -173,7 +141,48 @@ const App = () => {
                 )}
                 <div className="content">
                     <Routes>
-                        <Route path="/" element={renderPage()} />
+                        <Route path="/" element={
+                            !isAuthenticated ? (
+                                currentPage === 'Login' ? (
+                                    <LoginPage onLogin={handleLogin} onRegister={() => setCurrentPage('Register')} />
+                                ) : (
+                                    <RestaurantDetails onSubmit={handleSubmitRestaurantDetails} />
+                                )
+                            ) : (
+                                currentPage === 'TableOverview' ? (
+                                    <TableOverview
+                                        tables={tables}
+                                        addTable={addTable}
+                                        onSelectTable={handleSelectTable}
+                                        tableColors={tableColors}
+                                        onLogout={handleLogout}
+                                    />
+                                ) : currentPage === 'TableDetails' ? (
+                                    <TableDetails
+                                        tableNumber={selectedTable}
+                                        onBackClick={handleBackClick}
+                                        onGenerateKOT={handleGenerateKOT}
+                                        onGenerateBill={handleGenerateBill}
+                                        onComplete={handleComplete}
+                                    />
+                                ) : currentPage === 'Dashboard' ? (
+                                    <div>Dashboard Content</div>
+                                ) : currentPage === 'Menu' ? (
+                                    <Menu />
+                                ) : currentPage === 'Orders' ? (
+                                    <div>Orders Content</div>
+                                ) : currentPage === 'Reports' ? (
+                                    <div>Reports Content</div>
+                                ) : (
+                                    <TableOverview
+                                        tables={tables}
+                                        addTable={addTable}
+                                        onSelectTable={handleSelectTable}
+                                        tableColors={tableColors}
+                                    />
+                                )
+                            )
+                        } />
                         <Route path="/category/:categoryId/items" element={<ItemList />} />
                     </Routes>
                 </div>
