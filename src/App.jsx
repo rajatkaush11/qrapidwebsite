@@ -30,11 +30,11 @@ const App = () => {
     useEffect(() => {
         if (isAuthenticated) {
             fetchRestaurantDetails();
-            const eventSource = new EventSource(`${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API}/events`);
+            const ws = new WebSocket('wss://customerdb.vercel.app');
 
-            eventSource.onmessage = (event) => {
+            ws.onmessage = (event) => {
                 const order = JSON.parse(event.data);
-                console.log('New order received via SSE:', order);
+                console.log('New order received via WebSocket:', order);
                 const tableIndex = tables.indexOf(`T${order.tableNo}`);
                 if (tableIndex !== -1) {
                     updateTableColor(tableIndex, 'blue');
@@ -45,12 +45,12 @@ const App = () => {
                 }
             };
 
-            eventSource.onerror = (error) => {
-                console.error('SSE error:', error);
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
             };
 
             return () => {
-                eventSource.close();
+                ws.close();
             };
         }
     }, [isAuthenticated]);
