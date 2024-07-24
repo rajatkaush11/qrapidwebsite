@@ -32,6 +32,10 @@ const App = () => {
             fetchRestaurantDetails();
             const ws = new WebSocket('wss://customerdb.vercel.app');
 
+            ws.onopen = () => {
+                console.log('WebSocket connection opened');
+            };
+
             ws.onmessage = (event) => {
                 const order = JSON.parse(event.data);
                 console.log('New order received via WebSocket:', order);
@@ -47,6 +51,10 @@ const App = () => {
 
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket connection closed');
             };
 
             return () => {
