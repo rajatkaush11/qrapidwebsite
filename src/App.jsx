@@ -33,22 +33,9 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const wsUrl = 'wss://customerdb.vercel.app';
+        const wsUrl = 'wss://customerdb.vercel.app'; // Replace with the actual URL provided by Vercel
         console.log('WebSocket URL:', wsUrl);
         let ws;
-
-        const pingWebSocketServer = async () => {
-            try {
-                const response = await fetch(wsUrl.replace('wss', 'https').replace('ws', 'http'));
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                console.log('WebSocket server is reachable');
-                connectWebSocket();
-            } catch (error) {
-                console.error('WebSocket server is not reachable:', error);
-            }
-        };
 
         const connectWebSocket = () => {
             ws = new WebSocket(wsUrl);
@@ -81,12 +68,12 @@ const App = () => {
                 console.log('Disconnected from WebSocket server');
                 setTimeout(() => {
                     console.log('Reconnecting to WebSocket server...');
-                    pingWebSocketServer();
+                    connectWebSocket();
                 }, 5000);
             };
         };
 
-        pingWebSocketServer();
+        connectWebSocket();
 
         return () => {
             console.log('Closing WebSocket connection');
@@ -258,6 +245,5 @@ const App = () => {
         </Router>
     );
 };
-
 
 export default App;
