@@ -8,7 +8,6 @@ import ItemList from './components/ItemList';
 import RestaurantDetails from './components/RestaurantDetails';
 import LoginPage from './components/LoginPage';
 import './App.css';
-import { io } from 'socket.io-client';
 
 const App = () => {
   const [tables, setTables] = useState(Array.from({ length: 15 }, (_, index) => `T${index + 1}`));
@@ -31,17 +30,15 @@ const App = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchRestaurantDetails();
-      const socket = io('https://customerdb.vercel.app', {
-        path: '/api/socket.io',
-        transports: ['websocket'],
-      });
+      const ws = new WebSocket('wss://customerdb.vercel.app');
 
-      socket.on('connect', () => {
-        console.log('Socket.IO connection opened');
-      });
+      ws.onopen = () => {
+        console.log('WebSocket connection opened');
+      };
 
-      socket.on('newOrder', (order) => {
-        console.log('New order received via Socket.IO:', order);
+      ws.onmessage = (event) => {
+        const order = JSON.parse(event.data);
+        console.log('New order received via WebSocket:', order);
         const tableIndex = tables.indexOf(`T${order.tableNo}`);
         if (tableIndex !== -1) {
           updateTableColor(tableIndex, 'blue');
@@ -50,14 +47,18 @@ const App = () => {
             [`T${order.tableNo}`]: order
           }));
         }
-      });
+      };
 
-      socket.on('disconnect', () => {
-        console.log('Socket.IO connection closed');
-      });
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
 
       return () => {
-        socket.disconnect();
+        ws.close();
       };
     }
   }, [isAuthenticated]);
