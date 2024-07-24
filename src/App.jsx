@@ -33,9 +33,8 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        // Use the correct WebSocket URL
         const wsUrl = `${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API.replace(/^http/, 'ws')}`;
-        const ws = new WebSocket(wsUrl);
+        let ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
             console.log('Connected to WebSocket server');
@@ -61,8 +60,13 @@ const App = () => {
 
         ws.onclose = () => {
             console.log('Disconnected from WebSocket server');
+            // Try to reconnect after a delay
+            setTimeout(() => {
+                ws = new WebSocket(wsUrl);
+            }, 5000);
         };
 
+        // Clean up the WebSocket connection when the component is unmounted or tables change
         return () => {
             ws.close();
         };
