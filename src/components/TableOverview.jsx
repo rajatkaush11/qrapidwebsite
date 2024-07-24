@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import TableBox from './TableBox';
+import TableDetails from './TableDetails';
 import './TableOverview.css';
 
 const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout }) => {
     const [selectedTable, setSelectedTable] = useState(null);
-    const [activeRoom, setActiveRoom] = useState('AC Premium'); // Initialize activeRoom state
+    const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
     const [tableOrders, setTableOrders] = useState({});
 
@@ -111,11 +112,17 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                             tableNumber={tableNumber}
                             color={tableColors[index]}
                             isActive={selectedTable === tableNumber}
-                            orders={tableOrders[tableNumber] || []}
                             onClick={handleTableClick}
                         />
                     ))}
                 </div>
+                {selectedTable && (
+                    <TableDetails
+                        tableNumber={selectedTable}
+                        orders={tableOrders[selectedTable] || []}
+                        onBackClick={() => setSelectedTable(null)}
+                    />
+                )}
                 <div className="status-container">
                     <div className="status-item">
                         <span className="status-color grey"></span> Blank Table
