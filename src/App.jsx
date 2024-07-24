@@ -31,6 +31,32 @@ const App = () => {
         }
     }, [isAuthenticated]);
 
+    useEffect(() => {
+        const ws = new WebSocket(`${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API.replace('http', 'ws')}`);
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
+
+        ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'NEW_ORDER') {
+                const tableIndex = tables.indexOf(`T${message.order.tableNo}`);
+                if (tableIndex !== -1) {
+                    updateTableColor(tableIndex, 'blue'); // Set table color to blue for new order
+                }
+            }
+        };
+
+        ws.onclose = () => {
+            console.log('Disconnected from WebSocket server');
+        };
+
+        return () => {
+            ws.close();
+        };
+    }, [tables]);
+
     const fetchRestaurantDetails = async () => {
         const token = localStorage.getItem('token');
         console.log('Fetched token from localStorage:', token);
