@@ -35,45 +35,53 @@ const App = () => {
     useEffect(() => {
         const wsUrl = 'wss://customerdb.vercel.app'; // Ensure this URL is correct and accessible
         console.log('WebSocket URL:', wsUrl);
-        let ws = new WebSocket(wsUrl);
+        let ws;
 
-        ws.onopen = () => {
-            console.log('Connected to WebSocket server');
-        };
+        const connectWebSocket = () => {
+            ws = new WebSocket(wsUrl);
 
-        ws.onmessage = (event) => {
-            console.log('WebSocket message received:', event.data);
-            const message = JSON.parse(event.data);
-            if (message.type === 'NEW_ORDER') {
-                const tableIndex = tables.indexOf(`T${message.order.tableNo}`);
-                if (tableIndex !== -1) {
-                    console.log(`New order received for table ${message.order.tableNo}:`, message.order);
-                    updateTableColor(tableIndex, 'blue'); // Set table color to blue for new order
-                    setOrders((prevOrders) => ({
-                        ...prevOrders,
-                        [`T${message.order.tableNo}`]: message.order
-                    }));
+            ws.onopen = () => {
+                console.log('Connected to WebSocket server');
+            };
+
+            ws.onmessage = (event) => {
+                console.log('WebSocket message received:', event.data);
+                const message = JSON.parse(event.data);
+                if (message.type === 'NEW_ORDER') {
+                    const tableIndex = tables.indexOf(`T${message.order.tableNo}`);
+                    if (tableIndex !== -1) {
+                        console.log(`New order received for table ${message.order.tableNo}:`, message.order);
+                        updateTableColor(tableIndex, 'blue'); // Set table color to blue for new order
+                        setOrders((prevOrders) => ({
+                            ...prevOrders,
+                            [`T${message.order.tableNo}`]: message.order
+                        }));
+                    }
                 }
-            }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('Disconnected from WebSocket server');
+                // Try to reconnect after a delay
+                setTimeout(() => {
+                    console.log('Reconnecting to WebSocket server...');
+                    connectWebSocket();
+                }, 5000);
+            };
         };
 
-        ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
-
-        ws.onclose = () => {
-            console.log('Disconnected from WebSocket server');
-            // Try to reconnect after a delay
-            setTimeout(() => {
-                console.log('Reconnecting to WebSocket server...');
-                ws = new WebSocket(wsUrl);
-            }, 5000);
-        };
+        connectWebSocket();
 
         // Clean up the WebSocket connection when the component is unmounted or tables change
         return () => {
             console.log('Closing WebSocket connection');
-            ws.close();
+            if (ws) {
+                ws.close();
+            }
         };
     }, [tables]);
 
