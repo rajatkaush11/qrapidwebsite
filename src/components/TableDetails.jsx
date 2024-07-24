@@ -1,7 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
-import './TableDetails.css';
+import React, { useEffect, useState } from 'react';
 
 const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill, onComplete }) => {
     const [orders, setOrders] = useState([]);
@@ -9,7 +6,7 @@ const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill,
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders/${tableNumber}`);
+                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders`);
                 if (res.ok) {
                     const data = await res.json();
                     setOrders(data);
@@ -22,39 +19,21 @@ const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill,
         };
 
         fetchOrders();
-    }, [tableNumber]);
+    }, []);
 
     return (
-        <div className="table-details">
-            <div className="back-button-container">
-                <button className="back-button" onClick={onBackClick}>
-                    <FontAwesomeIcon icon={faArrowLeft} />
-                    <span>Back</span>
-                </button>
-            </div>
-            <h2 className="table-title">Table {tableNumber}</h2>
-            <div className="current-orders">
-                <h3>Current Orders</h3>
+        <div>
+            <h2>Table Details - {tableNumber}</h2>
+            <button onClick={onBackClick}>Back to Table Overview</button>
+            <button onClick={onGenerateKOT}>Generate KOT</button>
+            <button onClick={onGenerateBill}>Generate Bill</button>
+            <button onClick={onComplete}>Complete</button>
+            <h3>Orders</h3>
+            <ul>
                 {orders.map(order => (
-                    <div key={order._id} className="order-item active">
-                        <div className="order-text">
-                            <span>{order.name}</span>
-                            <span>${order.price}</span>
-                        </div>
-                        <button className="delete-button">
-                            <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                    </div>
+                    <li key={order._id}>{order.name}</li>
                 ))}
-            </div>
-            <div className="actions">
-                <button className="action-button add-item">Add Item</button>
-            </div>
-            <div className="action-buttons">
-                <button className="action-button generate-kot" onClick={onGenerateKOT}>Generate - KOT</button>
-                <button className="action-button generate-bill" onClick={onGenerateBill}>Generate - Bill</button>
-                <button className="action-button complete" onClick={onComplete}>Complete</button>
-            </div>
+            </ul>
         </div>
     );
 };
