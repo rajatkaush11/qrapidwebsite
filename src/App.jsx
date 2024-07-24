@@ -30,7 +30,7 @@ const App = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchRestaurantDetails();
-      const ws = new WebSocket('wss://customerdb.vercel.app');
+      const ws = new WebSocket(import.meta.env.VITE_WS_SERVER_URL);
 
       ws.onopen = () => {
         console.log('WebSocket connection opened');
