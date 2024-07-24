@@ -6,7 +6,6 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
-    const [localTableColors, setLocalTableColors] = useState(Array(tables.length).fill('blank'));
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
@@ -35,35 +34,6 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
 
         fetchRestaurantDetails();
     }, []);
-
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders`);
-                if (res.ok) {
-                    const orders = await res.json();
-                    updateTableColors(orders);
-                } else {
-                    console.error('Failed to fetch orders');
-                }
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-            }
-        };
-
-        fetchOrders();
-    }, []);
-
-    const updateTableColors = (orders) => {
-        const updatedColors = [...localTableColors];
-        orders.forEach(order => {
-            const tableIndex = tables.indexOf(`T${order.tableNo}`);
-            if (tableIndex !== -1) {
-                updatedColors[tableIndex] = 'blue';
-            }
-        });
-        setLocalTableColors(updatedColors);
-    };
 
     const handleTableClick = (tableNumber) => {
         setSelectedTable(tableNumber);
@@ -112,7 +82,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                         <TableBox
                             key={index}
                             tableNumber={tableNumber}
-                            color={localTableColors[index]}
+                            color={tableColors[index]}
                             isActive={selectedTable === tableNumber}
                             onClick={handleTableClick}
                         />
