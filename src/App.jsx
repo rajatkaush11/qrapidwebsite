@@ -30,59 +30,30 @@ const App = () => {
     useEffect(() => {
         if (isAuthenticated) {
             fetchRestaurantDetails();
-        }
-    }, [isAuthenticated]);
+            const eventSource = new EventSource(`${import.meta.env.VITE_BACKEND_API}/events`);
 
-    useEffect(() => {
-        const wsUrl = 'wss://customerdb.vercel.app'; // Replace with your WebSocket URL
-        console.log('WebSocket URL:', wsUrl);
-        let ws;
-
-        const connectWebSocket = () => {
-            ws = new WebSocket(wsUrl);
-
-            ws.onopen = () => {
-                console.log('Connected to WebSocket server');
-            };
-
-            ws.onmessage = (event) => {
-                console.log('WebSocket message received:', event.data);
-                const message = JSON.parse(event.data);
-                if (message.type === 'NEW_ORDER') {
-                    const tableIndex = tables.indexOf(`T${message.order.tableNo}`);
-                    if (tableIndex !== -1) {
-                        console.log(`New order received for table ${message.order.tableNo}:`, message.order);
-                        updateTableColor(tableIndex, 'blue');
-                        setOrders((prevOrders) => ({
-                            ...prevOrders,
-                            [`T${message.order.tableNo}`]: message.order
-                        }));
-                    }
+            eventSource.onmessage = (event) => {
+                const order = JSON.parse(event.data);
+                console.log('New order received via SSE:', order);
+                const tableIndex = tables.indexOf(`T${order.tableNo}`);
+                if (tableIndex !== -1) {
+                    updateTableColor(tableIndex, 'blue');
+                    setOrders((prevOrders) => ({
+                        ...prevOrders,
+                        [`T${order.tableNo}`]: order
+                    }));
                 }
             };
 
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
+            eventSource.onerror = (error) => {
+                console.error('SSE error:', error);
             };
 
-            ws.onclose = () => {
-                console.log('Disconnected from WebSocket server');
-                setTimeout(() => {
-                    console.log('Reconnecting to WebSocket server...');
-                    connectWebSocket();
-                }, 5000);
+            return () => {
+                eventSource.close();
             };
-        };
-
-        connectWebSocket();
-
-        return () => {
-            console.log('Closing WebSocket connection');
-            if (ws) {
-                ws.close();
-            }
-        };
-    }, [tables]);
+        }
+    }, [isAuthenticated]);
 
     const fetchRestaurantDetails = async () => {
         const token = localStorage.getItem('token');
