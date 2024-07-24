@@ -35,7 +35,6 @@ const App = () => {
       ws.onopen = () => {
         console.log('WebSocket connection opened');
       };
-
       ws.onmessage = (event) => {
         const order = JSON.parse(event.data);
         console.log('New order received via WebSocket:', order);
