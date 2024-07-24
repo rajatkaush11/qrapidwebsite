@@ -18,7 +18,7 @@ const Menu = () => {
     const fetchCategories = async () => {
         try {
             console.log(`Fetching categories for user ${userId}`);
-            const response = await fetch(`${apiBaseUrl}/categories`, {
+            const response = await fetch(`${apiBaseUrl}/categories/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if required
