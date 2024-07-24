@@ -34,6 +34,7 @@ const App = () => {
 
     useEffect(() => {
         const wsUrl = `${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API.replace(/^http/, 'ws')}`;
+        console.log('WebSocket URL:', wsUrl);
         let ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
@@ -41,10 +42,12 @@ const App = () => {
         };
 
         ws.onmessage = (event) => {
+            console.log('WebSocket message received:', event.data);
             const message = JSON.parse(event.data);
             if (message.type === 'NEW_ORDER') {
                 const tableIndex = tables.indexOf(`T${message.order.tableNo}`);
                 if (tableIndex !== -1) {
+                    console.log(`New order received for table ${message.order.tableNo}:`, message.order);
                     updateTableColor(tableIndex, 'blue'); // Set table color to blue for new order
                     setOrders((prevOrders) => ({
                         ...prevOrders,
@@ -62,12 +65,14 @@ const App = () => {
             console.log('Disconnected from WebSocket server');
             // Try to reconnect after a delay
             setTimeout(() => {
+                console.log('Reconnecting to WebSocket server...');
                 ws = new WebSocket(wsUrl);
             }, 5000);
         };
 
         // Clean up the WebSocket connection when the component is unmounted or tables change
         return () => {
+            console.log('Closing WebSocket connection');
             ws.close();
         };
     }, [tables]);
