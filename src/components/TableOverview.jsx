@@ -6,7 +6,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
-    const [tableColors, setTableColors] = useState(Array(tables.length).fill('blank'));
+    const [localTableColors, setLocalTableColors] = useState(Array(tables.length).fill('blank'));
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
@@ -55,14 +55,14 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     }, []);
 
     const updateTableColors = (orders) => {
-        const updatedColors = [...tableColors];
+        const updatedColors = [...localTableColors];
         orders.forEach(order => {
             const tableIndex = tables.indexOf(`T${order.tableNo}`);
             if (tableIndex !== -1) {
                 updatedColors[tableIndex] = 'blue';
             }
         });
-        setTableColors(updatedColors);
+        setLocalTableColors(updatedColors);
     };
 
     const handleTableClick = (tableNumber) => {
@@ -112,7 +112,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                         <TableBox
                             key={index}
                             tableNumber={tableNumber}
-                            color={tableColors[index]}
+                            color={localTableColors[index]}
                             isActive={selectedTable === tableNumber}
                             onClick={handleTableClick}
                         />
