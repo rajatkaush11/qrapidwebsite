@@ -33,7 +33,8 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const wsUrl = 'wss://qrapidbackend.vercel.app';
+        // Make sure the WebSocket URL is correct
+        const wsUrl = 'wss://customerdb.vercel.app';
         console.log('WebSocket URL:', wsUrl);
         let ws = new WebSocket(wsUrl);
 
