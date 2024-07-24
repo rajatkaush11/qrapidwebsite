@@ -30,14 +30,11 @@ const App = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchRestaurantDetails();
-      const ws = new WebSocket(import.meta.env.VITE_WS_SERVER_URL);
+      const eventSource = new EventSource(`${import.meta.env.VITE_BACKEND_API}/events`);
 
-      ws.onopen = () => {
-        console.log('WebSocket connection opened');
-      };
-      ws.onmessage = (event) => {
+      eventSource.onmessage = (event) => {
         const order = JSON.parse(event.data);
-        console.log('New order received via WebSocket:', order);
+        console.log('New order received via SSE:', order);
         const tableIndex = tables.indexOf(`T${order.tableNo}`);
         if (tableIndex !== -1) {
           updateTableColor(tableIndex, 'blue');
@@ -48,16 +45,12 @@ const App = () => {
         }
       };
 
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-
-      ws.onclose = () => {
-        console.log('WebSocket connection closed');
+      eventSource.onerror = (error) => {
+        console.error('SSE error:', error);
       };
 
       return () => {
-        ws.close();
+        eventSource.close();
       };
     }
   }, [isAuthenticated]);
