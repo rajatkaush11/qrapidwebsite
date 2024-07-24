@@ -6,6 +6,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
+    const [tableColors, setTableColors] = useState(Array(tables.length).fill('blank'));
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
