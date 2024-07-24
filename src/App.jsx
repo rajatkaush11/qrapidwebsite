@@ -33,7 +33,7 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const wsUrl = 'wss://customerdb.vercel.app'; // Replace with the actual URL provided by Vercel
+        const wsUrl = 'wss://customerdb.vercel.app'; // Replace with your WebSocket URL
         console.log('WebSocket URL:', wsUrl);
         let ws;
 
