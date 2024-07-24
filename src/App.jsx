@@ -33,9 +33,22 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const wsUrl = 'wss://customerdb.vercel.app'; // Ensure this URL is correct and accessible
+        const wsUrl = 'wss://customerdb.vercel.app';
         console.log('WebSocket URL:', wsUrl);
         let ws;
+
+        const pingWebSocketServer = async () => {
+            try {
+                const response = await fetch(wsUrl.replace('wss', 'https').replace('ws', 'http'));
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                console.log('WebSocket server is reachable');
+                connectWebSocket();
+            } catch (error) {
+                console.error('WebSocket server is not reachable:', error);
+            }
+        };
 
         const connectWebSocket = () => {
             ws = new WebSocket(wsUrl);
@@ -51,7 +64,7 @@ const App = () => {
                     const tableIndex = tables.indexOf(`T${message.order.tableNo}`);
                     if (tableIndex !== -1) {
                         console.log(`New order received for table ${message.order.tableNo}:`, message.order);
-                        updateTableColor(tableIndex, 'blue'); // Set table color to blue for new order
+                        updateTableColor(tableIndex, 'blue');
                         setOrders((prevOrders) => ({
                             ...prevOrders,
                             [`T${message.order.tableNo}`]: message.order
@@ -66,17 +79,15 @@ const App = () => {
 
             ws.onclose = () => {
                 console.log('Disconnected from WebSocket server');
-                // Try to reconnect after a delay
                 setTimeout(() => {
                     console.log('Reconnecting to WebSocket server...');
-                    connectWebSocket();
+                    pingWebSocketServer();
                 }, 5000);
             };
         };
 
-        connectWebSocket();
+        pingWebSocketServer();
 
-        // Clean up the WebSocket connection when the component is unmounted or tables change
         return () => {
             console.log('Closing WebSocket connection');
             if (ws) {
