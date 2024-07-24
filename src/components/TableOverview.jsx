@@ -4,8 +4,37 @@ import './TableOverview.css';
 
 const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout }) => {
     const [selectedTable, setSelectedTable] = useState(null);
+    const [activeRoom, setActiveRoom] = useState('AC Premium'); // Initialize activeRoom state
     const [restaurantName, setRestaurantName] = useState('QRapid');
     const [tableOrders, setTableOrders] = useState({});
+
+    useEffect(() => {
+        const fetchRestaurantDetails = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/restaurant`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        setRestaurantName(data.name);
+                    } else {
+                        console.error('Failed to fetch restaurant details');
+                    }
+                } catch (error) {
+                    console.error('Error fetching restaurant details:', error);
+                }
+            }
+        };
+
+        fetchRestaurantDetails();
+    }, []);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -36,6 +65,10 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const handleTableClick = (tableNumber) => {
         setSelectedTable(tableNumber);
         onSelectTable(tableNumber);
+    };
+
+    const handleRoomClick = (room) => {
+        setActiveRoom(room);
     };
 
     return (
