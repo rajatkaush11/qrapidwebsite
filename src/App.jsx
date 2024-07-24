@@ -30,7 +30,7 @@ const App = () => {
     useEffect(() => {
         if (isAuthenticated) {
             fetchRestaurantDetails();
-            const eventSource = new EventSource(`${import.meta.env.VITE_BACKEND_API}/events`);
+            const eventSource = new EventSource(`${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API}/events`);
 
             eventSource.onmessage = (event) => {
                 const order = JSON.parse(event.data);
