@@ -33,7 +33,7 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const wsUrl = `${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API.replace(/^http/, 'ws')}`;
+        const wsUrl = 'wss://qrapidbackend.vercel.app';
         console.log('WebSocket URL:', wsUrl);
         let ws = new WebSocket(wsUrl);
 
