@@ -35,6 +35,35 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
         fetchRestaurantDetails();
     }, []);
 
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders`);
+                if (res.ok) {
+                    const orders = await res.json();
+                    updateTableColors(orders);
+                } else {
+                    console.error('Failed to fetch orders');
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
+        };
+
+        fetchOrders();
+    }, []);
+
+    const updateTableColors = (orders) => {
+        const updatedColors = [...tableColors];
+        orders.forEach(order => {
+            const tableIndex = tables.indexOf(`T${order.tableNo}`);
+            if (tableIndex !== -1) {
+                updatedColors[tableIndex] = 'blue';
+            }
+        });
+        setTableColors(updatedColors);
+    };
+
     const handleTableClick = (tableNumber) => {
         setSelectedTable(tableNumber);
         onSelectTable(tableNumber);
