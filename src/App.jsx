@@ -33,7 +33,9 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const ws = new WebSocket(`${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API.replace('http', 'ws')}`);
+        // Use the correct WebSocket URL
+        const wsUrl = `${import.meta.env.VITE_APP_BASE_CUSTOMER_BACKEND_API.replace(/^http/, 'ws')}`;
+        const ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
             console.log('Connected to WebSocket server');
@@ -51,6 +53,10 @@ const App = () => {
                     }));
                 }
             }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
         };
 
         ws.onclose = () => {
