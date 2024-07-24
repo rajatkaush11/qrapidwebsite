@@ -37,10 +37,12 @@ const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill,
                 <h3>Current Orders</h3>
                 {orders.map(order => (
                     <div key={order._id} className="order-item active">
-                        <div className="order-text">
-                            <span>{order.name}</span>
-                            <span>${order.price}</span>
-                        </div>
+                        {order.items.map(item => (
+                            <div key={item.name} className="order-text">
+                                <span>{item.name}</span>
+                                <span>${item.price}</span>
+                            </div>
+                        ))}
                         <button className="delete-button">
                             <FontAwesomeIcon icon={faTrash} />
                         </button>
