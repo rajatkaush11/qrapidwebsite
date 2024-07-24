@@ -16,6 +16,7 @@ const App = () => {
     const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [restaurantName, setRestaurantName] = useState('');
+    const [orders, setOrders] = useState({});
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -44,6 +45,10 @@ const App = () => {
                 const tableIndex = tables.indexOf(`T${message.order.tableNo}`);
                 if (tableIndex !== -1) {
                     updateTableColor(tableIndex, 'blue'); // Set table color to blue for new order
+                    setOrders((prevOrders) => ({
+                        ...prevOrders,
+                        [`T${message.order.tableNo}`]: message.order
+                    }));
                 }
             }
         };
@@ -182,6 +187,7 @@ const App = () => {
                                         onSelectTable={handleSelectTable}
                                         tableColors={tableColors}
                                         onLogout={handleLogout}
+                                        orders={orders} // Pass orders to TableOverview
                                     />
                                 ) : currentPage === 'TableDetails' ? (
                                     <TableDetails
@@ -190,6 +196,7 @@ const App = () => {
                                         onGenerateKOT={handleGenerateKOT}
                                         onGenerateBill={handleGenerateBill}
                                         onComplete={handleComplete}
+                                        orders={orders} // Pass orders to TableDetails
                                     />
                                 ) : currentPage === 'Dashboard' ? (
                                     <div>Dashboard Content</div>
@@ -205,6 +212,7 @@ const App = () => {
                                         addTable={addTable}
                                         onSelectTable={handleSelectTable}
                                         tableColors={tableColors}
+                                        orders={orders} // Pass orders to TableOverview
                                     />
                                 )
                             )
