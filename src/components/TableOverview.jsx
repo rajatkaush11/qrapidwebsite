@@ -6,6 +6,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
+    const [tableOrders, setTableOrders] = useState({});
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
@@ -33,6 +34,32 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
         };
 
         fetchRestaurantDetails();
+    }, []);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders`);
+                if (res.ok) {
+                    const orders = await res.json();
+                    const ordersByTable = {};
+                    orders.forEach(order => {
+                        const tableKey = `T${order.tableNo}`;
+                        if (!ordersByTable[tableKey]) {
+                            ordersByTable[tableKey] = [];
+                        }
+                        ordersByTable[tableKey].push(order);
+                    });
+                    setTableOrders(ordersByTable);
+                } else {
+                    console.error('Failed to fetch orders');
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
+        };
+
+        fetchOrders();
     }, []);
 
     const handleTableClick = (tableNumber) => {
