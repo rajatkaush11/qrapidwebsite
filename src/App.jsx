@@ -21,6 +21,7 @@ const App = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
+            console.log('Token found in localStorage, setting authenticated state');
             setIsAuthenticated(true);
             setCurrentPage('TableOverview');
         }
