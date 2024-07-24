@@ -3,7 +3,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './TableDetails.css';
 
-const TableDetails = ({ tableNumber, orders, onBackClick, onGenerateKOT, onGenerateBill, onComplete }) => {
+const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill, onComplete }) => {
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders?tableNo=${tableNumber}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setOrders(data);
+                } else {
+                    console.error('Failed to fetch orders');
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
+        };
+
+        fetchOrders();
+    }, [tableNumber]);
+
     return (
         <div className="table-details">
             <div className="back-button-container">

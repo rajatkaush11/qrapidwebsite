@@ -8,6 +8,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
     const [tableOrders, setTableOrders] = useState({});
+    const [orderDetails, setOrderDetails] = useState([]);
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
@@ -63,9 +64,21 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
         fetchOrders();
     }, []);
 
-    const handleTableClick = (tableNumber) => {
+    const handleTableClick = async (tableNumber) => {
         setSelectedTable(tableNumber);
         onSelectTable(tableNumber);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders?tableNo=${tableNumber.replace('T', '')}`);
+            if (res.ok) {
+                const data = await res.json();
+                setOrderDetails(data);
+            } else {
+                console.error('Failed to fetch orders for selected table');
+            }
+        } catch (error) {
+            console.error('Error fetching orders for selected table:', error);
+        }
     };
 
     const handleRoomClick = (room) => {
@@ -112,6 +125,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                             tableNumber={tableNumber}
                             color={tableColors[index]}
                             isActive={selectedTable === tableNumber}
+                            orders={tableOrders[tableNumber] || []}
                             onClick={handleTableClick}
                         />
                     ))}
@@ -119,7 +133,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                 {selectedTable && (
                     <TableDetails
                         tableNumber={selectedTable}
-                        orders={tableOrders[selectedTable] || []}
+                        orders={orderDetails}
                         onBackClick={() => setSelectedTable(null)}
                     />
                 )}
