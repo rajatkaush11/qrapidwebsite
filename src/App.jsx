@@ -34,7 +34,7 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const socket = io('https://customerdb.vercel.app'); // Replace with your backend URL
+        const socket = io('https://customerdb.vercel.app', { path: '/socket.io' }); // Replace with your backend URL
         socket.on('newOrder', (order) => {
             console.log('New order received:', order);
             setOrders(prevOrders => [...prevOrders, order]);
