@@ -67,15 +67,12 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const handleTableClick = async (tableNumber) => {
         setSelectedTable(tableNumber);
         onSelectTable(tableNumber);
-    
+
         try {
             const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders/table/${tableNumber.replace('T', '')}`);
             if (res.ok) {
                 const data = await res.json();
-                setTableOrders(prevOrders => ({
-                    ...prevOrders,
-                    [tableNumber]: data // This ensures that only the data for the specific table is updated
-                }));
+                setTableOrders({ ...tableOrders, [tableNumber]: data });
             } else {
                 console.error('Failed to fetch orders for selected table');
             }
