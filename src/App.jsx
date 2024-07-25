@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -35,7 +34,7 @@ const App = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const socket = io('https://your-backend-url'); // Replace with your backend URL
+        const socket = io('https://customerdb.vercel.app'); // Replace with your backend URL
         socket.on('newOrder', (order) => {
             console.log('New order received:', order);
             setOrders(prevOrders => [...prevOrders, order]);

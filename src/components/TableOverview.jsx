@@ -1,4 +1,3 @@
-// components/TableOverview.js
 import React, { useState, useEffect } from 'react';
 import TableBox from './TableBox';
 import './TableOverview.css';
