@@ -31,25 +31,25 @@ const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill,
                     <span>Back</span>
                 </button>
             </div>
-            <h2 className="table-title">Table {tableNumber}</h2>
+            <h2 className="table-title">Table {tableNumber.replace('T', '')}</h2>
             <div className="current-orders">
                 <h3>Current Orders</h3>
-                {orders.map(order => (
+                {orders.length > 0 ? orders.map(order => (
                     <div key={order._id} className="order-item active">
-                        {order.items.map(item => (
-                            <div key={item.name} className="order-text">
-                                <span>{item.name}</span>
-                                <span>${item.price}</span>
+                        {order.items.map((item, idx) => (
+                            <div key={idx} className="order-text">
+                                <span>{item.name} - Qty: {item.quantity}</span>
+                                <span>${item.price.toFixed(2)}</span>
+                                <button className="delete-button" onClick={() => alert('Delete functionality not implemented')}>
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </button>
                             </div>
                         ))}
-                        <button className="delete-button">
-                            <FontAwesomeIcon icon={faTrash} />
-                        </button>
                     </div>
-                ))}
+                )) : <p>No orders found for this table.</p>}
             </div>
             <div className="actions">
-                <button className="action-button add-item">Add Item</button>
+                <button className="action-button add-item" onClick={() => alert('Add item functionality not implemented')}>Add Item</button>
                 <button className="action-button generate-kot" onClick={onGenerateKOT}>Generate - KOT</button>
                 <button className="action-button generate-bill" onClick={onGenerateBill}>Generate - Bill</button>
                 <button className="action-button complete" onClick={onComplete}>Complete</button>
