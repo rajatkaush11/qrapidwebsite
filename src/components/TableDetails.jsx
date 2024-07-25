@@ -9,7 +9,7 @@ const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill,
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders?tableNo=${tableNumber}`);
+                const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders?tableNo=${tableNumber.replace('T', '')}`);
                 if (res.ok) {
                     const data = await res.json();
                     setOrders(data);
@@ -20,7 +20,6 @@ const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill,
                 console.error('Error fetching orders:', error);
             }
         };
-
         fetchOrders();
     }, [tableNumber]);
 
@@ -51,8 +50,6 @@ const TableDetails = ({ tableNumber, onBackClick, onGenerateKOT, onGenerateBill,
             </div>
             <div className="actions">
                 <button className="action-button add-item">Add Item</button>
-            </div>
-            <div className="action-buttons">
                 <button className="action-button generate-kot" onClick={onGenerateKOT}>Generate - KOT</button>
                 <button className="action-button generate-bill" onClick={onGenerateBill}>Generate - Bill</button>
                 <button className="action-button complete" onClick={onComplete}>Complete</button>

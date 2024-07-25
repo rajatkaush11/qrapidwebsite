@@ -22,7 +22,6 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                             'Authorization': `Bearer ${token}`,
                         },
                     });
-
                     if (res.ok) {
                         const data = await res.json();
                         setRestaurantName(data.name);
@@ -34,7 +33,6 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                 }
             }
         };
-
         fetchRestaurantDetails();
     }, []);
 
@@ -65,17 +63,12 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
     const handleTableClick = async (tableNumber) => {
         setSelectedTable(tableNumber);
         onSelectTable(tableNumber);
-    
+
         try {
-            // Fetch only the orders for the clicked table.
             const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders/table/${tableNumber.replace('T', '')}`);
             if (res.ok) {
                 const data = await res.json();
-                // Update state to map orders to the specific table only
-                setTableOrders(prevOrders => ({
-                    ...prevOrders,
-                    [tableNumber]: data
-                }));
+                setTableOrders({ ...tableOrders, [tableNumber]: data });
             } else {
                 console.error('Failed to fetch orders for selected table');
             }
@@ -84,9 +77,6 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
         }
     };
     
-    
-    
-
     const handleRoomClick = (room) => {
         setActiveRoom(room);
     };
