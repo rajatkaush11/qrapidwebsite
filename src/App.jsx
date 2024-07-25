@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -8,6 +9,7 @@ import ItemList from './components/ItemList';
 import RestaurantDetails from './components/RestaurantDetails';
 import LoginPage from './components/LoginPage';
 import './App.css';
+import { io } from 'socket.io-client';
 
 const App = () => {
     const [tables, setTables] = useState(Array.from({ length: 15 }, (_, index) => `T${index + 1}`));
@@ -16,6 +18,7 @@ const App = () => {
     const [tableColors, setTableColors] = useState(Array(15).fill('blank'));
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [restaurantName, setRestaurantName] = useState('');
+    const [orders, setOrders] = useState([]); // Store orders
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -30,6 +33,22 @@ const App = () => {
             fetchRestaurantDetails();
         }
     }, [isAuthenticated]);
+
+    useEffect(() => {
+        const socket = io('https://your-backend-url'); // Replace with your backend URL
+        socket.on('newOrder', (order) => {
+            console.log('New order received:', order);
+            setOrders(prevOrders => [...prevOrders, order]);
+            if (order.tableNo && parseInt(order.tableNo.replace('T', '')) <= tableColors.length) {
+                const tableIndex = parseInt(order.tableNo.replace('T', '')) - 1;
+                updateTableColor(tableIndex, 'running');
+            }
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     const fetchRestaurantDetails = async () => {
         const token = localStorage.getItem('token');
@@ -155,6 +174,7 @@ const App = () => {
                                         addTable={addTable}
                                         onSelectTable={handleSelectTable}
                                         tableColors={tableColors}
+                                        orders={orders} // Pass orders to TableOverview
                                         onLogout={handleLogout}
                                     />
                                 ) : currentPage === 'TableDetails' ? (
@@ -164,6 +184,7 @@ const App = () => {
                                         onGenerateKOT={handleGenerateKOT}
                                         onGenerateBill={handleGenerateBill}
                                         onComplete={handleComplete}
+                                        orders={orders.filter(order => order.tableNo === selectedTable)} // Pass orders for the selected table
                                     />
                                 ) : currentPage === 'Dashboard' ? (
                                     <div>Dashboard Content</div>
@@ -179,6 +200,7 @@ const App = () => {
                                         addTable={addTable}
                                         onSelectTable={handleSelectTable}
                                         tableColors={tableColors}
+                                        orders={orders} // Pass orders to TableOverview
                                     />
                                 )
                             )
