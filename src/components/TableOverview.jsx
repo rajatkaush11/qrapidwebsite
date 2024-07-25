@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import TableBox from './TableBox';
-import TableDetails from './TableDetails';
 import './TableOverview.css';
 
 const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout }) => {
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
-    const [tableOrders, setTableOrders] = useState({});
-    const [orderDetails, setOrderDetails] = useState([]);
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
@@ -22,6 +19,7 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                             'Authorization': `Bearer ${token}`,
                         },
                     });
+
                     if (res.ok) {
                         const data = await res.json();
                         setRestaurantName(data.name);
@@ -33,42 +31,13 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                 }
             }
         };
+
         fetchRestaurantDetails();
     }, []);
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders`);
-            if (res.ok) {
-                const orders = await res.json();
-                const ordersByTable = {};
-                orders.forEach(order => {
-                    const tableKey = `T${order.tableNo}`;
-                    if (!ordersByTable[tableKey]) {
-                        ordersByTable[tableKey] = [];
-                    }
-                    ordersByTable[tableKey].push(order);
-                });
-                setTableOrders(ordersByTable);
-            } else {
-                console.error('Failed to fetch orders');
-            }
-        };
-
-        fetchOrders();
-    }, []);
-
-    const handleTableClick = async (tableNumber) => {
+    const handleTableClick = (tableNumber) => {
         setSelectedTable(tableNumber);
-        onSelectTable && onSelectTable(tableNumber);
-
-        const res = await fetch(`${import.meta.env.VITE_CUSTOMER_BACKEND_API}/orders/table/${tableNumber.replace('T', '')}`);
-        if (res.ok) {
-            const data = await res.json();
-            setOrderDetails(data);
-        } else {
-            console.error('Failed to fetch orders for selected table');
-        }
+        onSelectTable(tableNumber);
     };
 
     const handleRoomClick = (room) => {
@@ -83,13 +52,22 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                 <button className="logout-btn" onClick={onLogout}>Logout</button>
             </div>
             <div className="room-button-group">
-                <button className={activeRoom === 'AC Premium' ? 'active' : ''} onClick={() => handleRoomClick('AC Premium')}>
+                <button
+                    className={activeRoom === 'AC Premium' ? 'active' : ''}
+                    onClick={() => handleRoomClick('AC Premium')}
+                >
                     AC Premium
                 </button>
-                <button className={activeRoom === 'Room-2' ? 'active' : ''} onClick={() => handleRoomClick('Room-2')}>
+                <button
+                    className={activeRoom === 'Room-2' ? 'active' : ''}
+                    onClick={() => handleRoomClick('Room-2')}
+                >
                     Room-2
                 </button>
-                <button className={activeRoom === 'Room-3' ? 'active' : ''} onClick={() => handleRoomClick('Room-3')}>
+                <button
+                    className={activeRoom === 'Room-3' ? 'active' : ''}
+                    onClick={() => handleRoomClick('Room-3')}
+                >
                     Room-3
                 </button>
             </div>
@@ -106,18 +84,10 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout 
                             tableNumber={tableNumber}
                             color={tableColors[index]}
                             isActive={selectedTable === tableNumber}
-                            orders={tableOrders[tableNumber] || []}
                             onClick={handleTableClick}
                         />
                     ))}
                 </div>
-                {selectedTable && (
-                    <TableDetails
-                        tableNumber={selectedTable}
-                        orders={orderDetails}
-                        onBackClick={() => setSelectedTable(null)}
-                    />
-                )}
                 <div className="status-container">
                     <div className="status-item">
                         <span className="status-color grey"></span> Blank Table
