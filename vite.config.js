@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      input: './public/index.html', // Correct path to the HTML entry file
+      input: './public/index.html', // Ensure this path is correct
     },
   },
 });
