@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TableBox from './TableBox';
 import './TableOverview.css';
 
-const TableOverview = ({ tables, addTable, onSelectTable, tableColors, orders, onLogout }) => {
+const TableOverview = ({ tables, addTable, onSelectTable, tableColors, onLogout }) => {
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeRoom, setActiveRoom] = useState('AC Premium');
     const [restaurantName, setRestaurantName] = useState('QRapid');
@@ -85,7 +85,6 @@ const TableOverview = ({ tables, addTable, onSelectTable, tableColors, orders, o
                             color={tableColors[index]}
                             isActive={selectedTable === tableNumber}
                             onClick={handleTableClick}
-                            orders={orders.filter(order => order.tableNo === tableNumber)} // Pass orders for each table
                         />
                     ))}
                 </div>
