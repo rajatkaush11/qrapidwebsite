@@ -4,8 +4,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
-    rollupOptions: {
-      input: './public/index.html', // Ensure this path is correct
-    },
+    outDir: 'dist',
+    chunkSizeWarningLimit: 1000, // Set this to a higher value to suppress the warning
   },
 });
