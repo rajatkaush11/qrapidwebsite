@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar.js'; // Updated extensions
-import TableOverview from './components/TableOverview.js'; // Updated extensions
-import TableDetails from './components/TableDetails.js'; // Updated extensions
-import Menu from './components/Menu.js'; // Updated extensions
-import ItemList from './components/ItemList.js'; // Updated extensions
-import RestaurantDetails from './components/RestaurantDetails.js'; // Updated extensions
-import LoginPage from './components/LoginPage.js'; // Updated extensions
+import Navbar from './components/Navbar.jsx';
+import TableOverview from './components/TableOverview.jsx';
+import TableDetails from './components/TableDetails.jsx';
+import Menu from './components/Menu.jsx';
+import ItemList from './components/ItemList.jsx';
+import RestaurantDetails from './components/RestaurantDetails.jsx';
+import LoginPage from './components/LoginPage.jsx';
 import './App.css';
 
 const App = () => {
